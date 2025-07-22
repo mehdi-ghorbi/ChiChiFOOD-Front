@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.chichifood.controller.SignupController"
+            prefWidth="600" prefHeight="600">
+
+   <VBox spacing="15" alignment="CENTER" AnchorPane.topAnchor="50" AnchorPane.leftAnchor="50" AnchorPane.rightAnchor="50">
+
+      <Text text="Sign Up Form" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+      <HBox spacing="50" alignment="CENTER">
+         <VBox spacing="10">
+            <Label text="Role :" style="-fx-font-size: 16px;"/>
+            <RadioButton fx:id="BuyerRadioButton" text="Buyer"/>
+            <RadioButton fx:id="SellerRadioButton" text="Seller"/>
+            <RadioButton fx:id="CourierRadioButton" text="Courier"/>
+            <RadioButton fx:id="AdminRadioButton" text="Admin"/>
+         </VBox>
+
+         <VBox spacing="10">
+            <TextField fx:id="FullNameTextFiled" promptText="Full Name" />
+            <TextField fx:id="PhoneTextFiled" promptText="Phone" />
+            <TextField fx:id="EmailTextFiled" promptText="Email" />
+            <TextField fx:id="PassTextFiled" promptText="Password" />
+            <TextField fx:id="AddressTextFiled" promptText="Address" />
+            <TextField fx:id="BankNameTextFiled" promptText="Bank Name" />
+            <TextField fx:id="AccuontNumberTextFiled" promptText="Account Number" />
+         </VBox>
+      </HBox>
+
+      <HBox spacing="15" alignment="CENTER">
+         <Button fx:id="ImageButton" text="Select Image" />
+         <ImageView fx:id="imageView" fitHeight="100" fitWidth="100" preserveRatio="true"/>
+      </HBox>
+
+      <Button fx:id="SignupButton" text="Sign Up" maxWidth="200"/>
+
+      <Text fx:id="loginText" text="Already have an account? Login here."
+            style="-fx-underline: true; -fx-font-size: 14px; -fx-fill: #415efa; -fx-cursor: hand"/>
+   </VBox>
+</AnchorPane>
