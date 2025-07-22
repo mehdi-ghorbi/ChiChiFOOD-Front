@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="Views.RestaurantPanel"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="">
+    <center>
+        <VBox alignment="TOP_CENTER" prefHeight="367.0" prefWidth="800.0" spacing="10">
+            <Label text="Menus" />
+            <TableView fx:id="menuTableView" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="menuNameColumn" text="Menu Name" />
+                    <TableColumn fx:id="editColumn" text="Edit" />
+                    <TableColumn fx:id="deleteColumn" text="Delete" />
+                    <TableColumn fx:id="showFoodsColumn" text="Show Foods" />
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+    <bottom>
+        <VBox alignment="TOP_CENTER" spacing="10">
+            <Label text="Foods in Selected Menu" />
+            <TableView fx:id="foodsTableView" prefHeight="150">
+                <columns>
+                    <TableColumn fx:id="foodNameColumn" text="Food Name" />
+                    <TableColumn fx:id="priceColumn" text="Price" />
+                </columns>
+            </TableView>
+        </VBox>
+    </bottom>
+</BorderPane>

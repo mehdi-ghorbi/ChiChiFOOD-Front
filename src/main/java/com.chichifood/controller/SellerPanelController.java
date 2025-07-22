@@ -1,10 +1,18 @@
 package com.chichifood.controller;
 
 import com.chichifood.network.RestaurantNetwork;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class SellerPanelController {
     @FXML
@@ -20,16 +28,45 @@ public class SellerPanelController {
         restaurantPanelButton.setOnAction(event -> {
             RestaurantNetwork.getRestaurants(apiResponse -> {
                 int responseCode = apiResponse.getStatusCode();
-                Platform.runLater(() -> {
-                    if (responseCode == 200) {
+                String body = apiResponse.getBody();
+                System.out.println(body);
 
-                        if (true) {
-                            showAlert("موفق", "رستوران شما ثبت شده.");
+                Platform.runLater(() -> {
+                    try {
+                        FXMLLoader loader;
+                        Scene scene;
+                        Stage stage = (Stage) restaurantPanelButton.getScene().getWindow();
+
+                        if (responseCode == 200) {
+                            JsonArray jsonArray = JsonParser.parseString(body).getAsJsonArray();
+                            JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
+                            boolean isRestaurantConfirmed = jsonObject.get("isRestaurantConfirmed").getAsBoolean();
+                            if (isRestaurantConfirmed) {
+                                // لود کردن پنل رستوران
+                                loader = new FXMLLoader(getClass().getResource("/views/RestaurantPanel.fxml"));
+                                scene = new Scene(loader.load());
+                                stage.setScene(scene);
+                                stage.setTitle("Restaurant Panel");
+                            } else {
+                                showAlert("403", "Your Restaurant is not confirmed");
+                            }
+                        } else if (responseCode == 404) {
+                            // لود کردن صفحه ثبت رستوران
+                            loader = new FXMLLoader(getClass().getResource("/views/RestaurantSignup.fxml"));
+                            scene = new Scene(loader.load());
+                            stage.setScene(scene);
+                            stage.setTitle("Restaurant Signup");
+                        }else {
+                            showAlert(String.valueOf(responseCode), body);
+
                         }
-                    } else {
-                        // ببرمش به restaurantSignup.fxml
+
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 });
+
             });
         });
     }
