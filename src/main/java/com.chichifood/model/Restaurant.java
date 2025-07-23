@@ -7,9 +7,19 @@ public class Restaurant {
     private String address;
     private String phone;
     private String logoBase64;
-    private Integer taxFee;
-    private Integer additionalFee;
+    private int taxFee;
+    private int additionalFee;
     private boolean isRestaurantConfirmed;
+
+    public Restaurant(int id, String name, String address, String phone, String logoBase64, int taxFee, int additionalFee) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        this.logoBase64 = logoBase64;
+        this.taxFee = taxFee;
+        this.additionalFee = additionalFee;
+    }
 
     public int getId() {
         return id;
@@ -51,19 +61,19 @@ public class Restaurant {
         this.logoBase64 = logoBase64;
     }
 
-    public Integer getTaxFee() {
+    public int getTaxFee() {
         return taxFee;
     }
 
-    public void setTaxFee(Integer taxFee) {
+    public void setTaxFee(int taxFee) {
         this.taxFee = taxFee;
     }
 
-    public Integer getAdditionalFee() {
+    public int getAdditionalFee() {
         return additionalFee;
     }
 
-    public void setAdditionalFee(Integer additionalFee) {
+    public void setAdditionalFee(int additionalFee) {
         this.additionalFee = additionalFee;
     }
 

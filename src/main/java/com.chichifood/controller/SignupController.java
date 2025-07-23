@@ -22,6 +22,7 @@
 
     import static com.chichifood.network.NetworkService.signup;
 
+
     public class SignupController {
 
         @FXML private TextField FullNameTextFiled;

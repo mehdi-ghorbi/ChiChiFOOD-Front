@@ -40,5 +40,17 @@ public class NetworkService {
     public static void logout(Consumer<ApiResponse> callback) {
 
     }
+    public static void signup(User user, String base64Image, Consumer<ApiResponse> callback) {
+        HttpClient client = HttpClient.newHttpClient();
+        String json = String.format("{\n    \"full_name\": \"%s\",\n    \"phone\": \"%s\",\n    \"email\": \"%s\",\n    \"password\": \"%s\",\n    \"role\": \"%s\",\n    \"address\": \"%s\",\n    \"profileImageBase64\": \"%s\",\n    \"bank_info\": {\n        \"bank_name\": \"%s\",\n        \"account_number\": \"%s\"\n    }\n}\n", user.getFullName(), user.getPhone(), user.getEmail(), user.getPassword(), user.getRole(), user.getAddress(), base64Image, user.getBankName(), user.getAccountNumber());
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8569/auth/register")).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(json)).build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept((response) -> {
+            ApiResponse apiResponse = new ApiResponse(response.statusCode(), (String)response.body());
+            callback.accept(apiResponse);
+        }).exceptionally((e) -> {
+            callback.accept(new ApiResponse(500, "Server Error"));
+            return null;
+        });
+    }
 
 }

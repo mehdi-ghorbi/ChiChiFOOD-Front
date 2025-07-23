@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.chichifood.controller.VendorsController"
+      fx:controller="com.chichifood.controller.VendorsViewsController"
       spacing="20" alignment="TOP_CENTER"
       prefWidth="700" prefHeight="700"
       style="-fx-padding: 20;">
@@ -16,7 +16,7 @@
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Search Vendors:"/>
         <TextField fx:id="vendorSearchField" promptText="Enter keywords..."/>
-        <Button text="Search" onAction="#onVendorSearch"/>
+        <Button text="Search" onAction="#handleSearchAction"/>
     </HBox>
 
     <!-- لیست رستوران‌ها -->
