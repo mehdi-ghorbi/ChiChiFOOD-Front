@@ -1,6 +1,7 @@
     package com.chichifood.controller;
 
     import com.chichifood.model.User;
+    import com.chichifood.network.NetworkService;
     import com.chichifood.network.SessionManager;
     import com.google.gson.JsonObject;
     import com.google.gson.JsonParser;
@@ -19,9 +20,6 @@
     import java.awt.image.BufferedImage;
     import java.io.*;
     import java.util.Base64;
-
-    import static com.chichifood.network.NetworkService.signup;
-
 
     public class SignupController {
 
@@ -110,7 +108,7 @@
             }
             User user = new User(fullName, phone, email, password, role, address, bankName, accountNumber);
 
-            signup(user, base64Image, apiResponse -> {
+            NetworkService.signup(user, base64Image, apiResponse -> {
                 System.out.println(apiResponse.getStatusCode());
                 if (apiResponse.getStatusCode() == 200 ) {
                     System.out.println(apiResponse.getBody());
