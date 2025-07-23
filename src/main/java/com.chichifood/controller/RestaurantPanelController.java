@@ -2,6 +2,12 @@ package com.chichifood.controller;
 
 import com.chichifood.model.Item;
 import com.chichifood.model.Menu;
+import com.chichifood.network.RestaurantNetwork;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +19,8 @@ import javafx.scene.image.ImageView;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 public class RestaurantPanelController {
 
@@ -149,9 +157,62 @@ public class RestaurantPanelController {
             return null;
         }
     }
-
+    static String  restaurantID ;
     // داده تستی
     private void seedSampleData() {
+        RestaurantNetwork.getRestaurants(apiResponse -> {
+            if (apiResponse.getStatusCode() == 200) {
+                JsonArray jsonArray = JsonParser.parseString(apiResponse.getBody()).getAsJsonArray();
+                if (jsonArray.size() > 0) {
+                    JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
+                    restaurantID = jsonObject.get("id").getAsString();
 
+                    // بعد از گرفتن ID، آیتم‌ها و منوها رو بگیر
+                    loadMenus(restaurantID);
+//                    loadItems(restaurantID);
+                }
+            } else {
+                System.out.println("خطا در گرفتن رستوران‌ها: " + apiResponse.getBody());
+            }
+        });
     }
+    private void loadMenus(String restaurantId) {
+        RestaurantNetwork.getMenus(restaurantId, apiResponse -> {
+//            if (apiResponse.getStatusCode() == 200) {
+//                List<Map<String, Object>> menus = (List<Map<String, Object>>) apiResponse.getBody();
+//                for (Map<String, Object> map : menus) {
+//                    Menu menu = new Menu();
+//                    menu.setId(Long.parseLong(map.get("id").toString()));
+//                    menu.setTitle(map.get("title").toString());
+//                    menuData.add(menu);
+//                }
+//            } else {
+//                System.out.println("خطا در دریافت منوها: " + apiResponse.getBody());
+//            }
+            System.out.println(apiResponse.getBody());
+        });
+    }
+//    private void loadItems(String restaurantId) {
+//        RestaurantNetwork.getItems(restaurantId, apiResponse -> {
+//            if (apiResponse.getStatusCode() == 200) {
+//                Gson gson = new Gson();
+//                Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
+//                List<Map<String, Object>> items = gson.fromJson(apiResponse.getBody(), type);
+//
+//                for (Map<String, Object> map : items) {
+//                    Item item = new Item();
+//                    item.setId(Long.parseLong(map.get("id").toString()));
+//                    item.setName(map.get("name").toString());
+//                    item.setPrice(Integer.parseInt(map.get("price").toString()));
+//                    item.setImageBase64((String) map.get("image"));
+//                    foodsData.add(item);
+//                }
+//            } else {
+//                System.out.println("خطا در دریافت آیتم‌ها: " + apiResponse.getBody());
+//            }
+//        });
+//    }
+
+
+
 }
