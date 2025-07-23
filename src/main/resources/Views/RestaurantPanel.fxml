@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="">
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.chichifood.controller.RestaurantPanelController"
+            prefHeight="600.0" prefWidth="800.0">
+
     <center>
-        <VBox alignment="TOP_CENTER" prefHeight="367.0" prefWidth="800.0" spacing="10">
-            <Label text="Menus" />
+        <VBox alignment="TOP_CENTER" spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="منوها" />
             <TableView fx:id="menuTableView" prefHeight="200">
                 <columns>
-                    <TableColumn fx:id="menuNameColumn" text="Menu Name" />
-                    <TableColumn fx:id="editColumn" text="Edit" />
-                    <TableColumn fx:id="deleteColumn" text="Delete" />
-                    <TableColumn fx:id="showFoodsColumn" text="Show Foods" />
+                    <TableColumn fx:id="menuNameColumn" text="عنوان منو" />
+                    <TableColumn fx:id="actionColumn" text="عملیات" />
                 </columns>
             </TableView>
         </VBox>
     </center>
+
     <bottom>
         <VBox alignment="TOP_CENTER" spacing="10">
-            <Label text="Foods in Selected Menu" />
-            <TableView fx:id="foodsTableView" prefHeight="150">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="غذاهای این منو" />
+            <TableView fx:id="foodsTableView" prefHeight="250">
                 <columns>
-                    <TableColumn fx:id="foodNameColumn" text="Food Name" />
-                    <TableColumn fx:id="priceColumn" text="Price" />
+                    <TableColumn fx:id="foodNameColumn" text="نام غذا" />
+                    <TableColumn fx:id="priceColumn" text="قیمت" />
+                    <TableColumn fx:id="imageColumn" text="تصویر" />
+                    <TableColumn fx:id="foodActionColumn" text="عملیات" />
                 </columns>
             </TableView>
         </VBox>
