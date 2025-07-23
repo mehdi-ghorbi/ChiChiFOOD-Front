@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1"
-      alignment="CENTER" spacing="20" prefWidth="400" prefHeight="300">
-    <Text text="Buyer Panel" style="-fx-font-size: 30px; -fx-font-weight: bold;" />
-    <Button text="Logout" fx:id="logoutButton" />
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chichifood.controller.BuyerController"
+      spacing="20" alignment="TOP_CENTER"
+      prefWidth="600" prefHeight="600" style="-fx-padding: 20;">
+
+    <!-- سرچ اول -->
+    <VBox spacing="5">
+        <Label text="Search by Keywords (at least 2, comma-separated):"/>
+        <TextField fx:id="keywordSearchField" promptText="e.g. pizza, spicy"/>
+    </VBox>
+
+    <!-- سرچ دوم -->
+    <VBox spacing="5">
+        <Label text="Advanced Search (String, Integer, String):"/>
+        <HBox spacing="10">
+            <TextField fx:id="advField1" promptText="e.g. burger"/>
+            <TextField fx:id="advField2" promptText="e.g. 2"/>
+            <TextField fx:id="advField3" promptText="e.g. grilled"/>
+        </HBox>
+    </VBox>
+
+    <!-- باکس Orders -->
+    <VBox spacing="5" style="-fx-border-color: gray; -fx-border-width: 1; -fx-padding: 10;">
+        <Label text="Orders" style="-fx-font-weight: bold;"/>
+        <VBox fx:id="ordersBox" minHeight="100" prefHeight="150" />
+    </VBox>
+
+    <!-- باکس Favorite Restaurants -->
+    <VBox spacing="5" style="-fx-border-color: gray; -fx-border-width: 1; -fx-padding: 10;">
+        <Label text="Your favorite restaurants" style="-fx-font-weight: bold;"/>
+        <VBox fx:id="favoritesBox" minHeight="100" prefHeight="150" />
+    </VBox>
+
 </VBox>

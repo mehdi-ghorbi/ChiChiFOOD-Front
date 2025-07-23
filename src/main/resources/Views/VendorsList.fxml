@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chichifood.controller.VendorsController"
+      spacing="20" alignment="TOP_CENTER"
+      prefWidth="700" prefHeight="700"
+      style="-fx-padding: 20;">
+
+    <!-- نوار جستجوی Vendor -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Search Vendors:"/>
+        <TextField fx:id="vendorSearchField" promptText="Enter keywords..."/>
+        <Button text="Search" onAction="#onVendorSearch"/>
+    </HBox>
+
+    <!-- لیست رستوران‌ها -->
+    <ScrollPane fitToWidth="true" prefHeight="600">
+        <VBox fx:id="vendorsListBox" spacing="15" padding="10">
+            <!-- آیتم‌های رستوران به صورت داینامیک اینجا لود می‌شن -->
+        </VBox>
+    </ScrollPane>
+
+</VBox>
