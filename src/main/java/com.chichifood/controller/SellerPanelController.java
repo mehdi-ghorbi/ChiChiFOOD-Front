@@ -29,7 +29,6 @@ public class SellerPanelController {
             RestaurantNetwork.getRestaurants(apiResponse -> {
                 int responseCode = apiResponse.getStatusCode();
                 String body = apiResponse.getBody();
-                System.out.println(body);
 
                 Platform.runLater(() -> {
                     try {

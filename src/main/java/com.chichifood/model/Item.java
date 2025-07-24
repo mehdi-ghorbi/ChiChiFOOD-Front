@@ -1,6 +1,8 @@
 package com.chichifood.model;
 
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +15,9 @@ public class Item {
     private final IntegerProperty price = new SimpleIntegerProperty();
     private final IntegerProperty supply = new SimpleIntegerProperty();
 
-    private final ListProperty<String> keywords = new SimpleListProperty<>();
-    private final ListProperty<Menu> menus = new SimpleListProperty<>();
+    private final ListProperty<String> keywords = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<Menu> menus = new SimpleListProperty<>(FXCollections.observableArrayList());
+
 
     private Restaurant restaurant;
 

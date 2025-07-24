@@ -4,6 +4,7 @@ import com.chichifood.model.User;
 import com.chichifood.network.ApiResponse;
 import com.chichifood.network.SessionManager;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -68,13 +69,8 @@ public class RestaurantNetwork {
                     int statusCode = response.statusCode();
                     String body = response.body();
 
-                    if (statusCode == 200) {
-                        Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
-                        List<Map<String, Object>> items = gson.fromJson(body, type);
-                        callback.accept(new ApiResponse(200, items));
-                    } else {
-                        callback.accept(new ApiResponse(statusCode, body));
-                    }
+                        callback.accept(new ApiResponse(200, body));
+
                 })
                 .exceptionally(e -> {
                     callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
@@ -103,13 +99,60 @@ public class RestaurantNetwork {
                     int statusCode = response.statusCode();
                     String body = response.body();
 
-                    if (statusCode == 200) {
-                        Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
-                        List<Map<String, Object>> menus = gson.fromJson(body, type);
-                        callback.accept(new ApiResponse(200, menus));
-                    } else {
-                        callback.accept(new ApiResponse(statusCode, body));
-                    }
+                       callback.accept(new ApiResponse(statusCode, body));
+
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+    }
+    public static void addItem(String restaurantId, JsonObject jsonObject, Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        String url = "http://localhost:8569/restaurants/" + restaurantId + "/item";
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+
+                    callback.accept(new ApiResponse(statusCode, body));
+
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+
+    }
+    public static void deleteItem(String restaurantId,String itemID, Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        String url = "http://localhost:8569/restaurants/" + restaurantId + "/item/" + itemID;
+        System.out.println(url);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .DELETE()
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+                    callback.accept(new ApiResponse(statusCode, body));
                 })
                 .exceptionally(e -> {
                     callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));

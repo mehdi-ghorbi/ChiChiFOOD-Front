@@ -103,8 +103,8 @@ public class VendorsController {
         List<Restaurant> vendors = new ArrayList<>();
 
         // اینجا بعداً از سرور واقعی می‌گیری
-        vendors.add(new Restaurant(1, "Pizza King", "123 Street", "09121234567", SAMPLE_IMAGE_BASE64, 9.0, 2.5));
-        vendors.add(new Restaurant(2, "Grill House", "456 Road", "09337654321", SAMPLE_IMAGE_BASE64, 10.0, 3.0));
+        //vendors.add(new Restaurant(1, "Pizza King", "123 Street", "09121234567", SAMPLE_IMAGE_BASE64, 9.0, 2.5));
+       // vendors.add(new Restaurant(2, "Grill House", "456 Road", "09337654321", SAMPLE_IMAGE_BASE64, 10.0, 3.0));
 
         return vendors;
     }
