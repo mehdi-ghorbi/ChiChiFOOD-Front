@@ -38,6 +38,9 @@ public class Item {
         this.supply.set(supply);
         this.keywords.setAll(keywords);
     }
+    public Item(){
+
+    }
     private Restaurant restaurant;
 
     public int getId() { return id.get(); }

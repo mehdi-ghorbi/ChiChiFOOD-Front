@@ -1,18 +1,22 @@
 package com.chichifood.controller;
 
 import com.chichifood.network.RestaurantNetwork;
+import com.chichifood.network.SessionManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpRequest;
 
 public class SellerPanelController {
     @FXML
@@ -20,6 +24,9 @@ public class SellerPanelController {
 
     @FXML
     private Button restaurantPanelButton;
+
+    @FXML
+    private Button LogoutButton;
 
     public void initialize() {
         profileButton.setOnAction(event -> {
@@ -67,6 +74,26 @@ public class SellerPanelController {
                 });
 
             });
+        });
+        LogoutButton.setOnAction(event -> {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8569/logout"))
+                    .header("Authorization", "Bearer " + SessionManager.getToken())
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+            SessionManager.clearToken();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/login.fxml"));
+            Parent root = null;
+            try {
+                root = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Stage stage = (Stage) LogoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+
         });
     }
 

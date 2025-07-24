@@ -2,6 +2,8 @@ package com.chichifood.controller;
 
 import com.chichifood.model.Item;
 import com.chichifood.model.Menu;
+import com.chichifood.network.ApiResponse;
+import com.chichifood.network.NetworkService;
 import com.chichifood.network.RestaurantNetwork;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -10,25 +12,35 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.chichifood.network.SessionManager.showAlert;
 
@@ -67,7 +79,8 @@ public class RestaurantPanelController {
     private Button deleteFoodBtn;
     @FXML
     private Button addFoodBtn;
-
+    @FXML
+    private Button backBtn;
     private final ObservableList<Menu> menuData = FXCollections.observableArrayList();
     private final ObservableList<Item> foodsData = FXCollections.observableArrayList();
 
@@ -103,11 +116,18 @@ public class RestaurantPanelController {
                 if (empty || base64 == null || base64.isBlank()) {
                     setGraphic(null);
                 } else {
-                    imageView.setImage(decodeBase64ToImage(base64));
-                    setGraphic(imageView);
+                    // تغییر اصلی اینجاست:
+                    File file = new File(base64); // چون حالا base64 فقط اسم فیلده ولی محتواش مسیر فایل هست
+                    if (file.exists()) {
+                        imageView.setImage(new Image(file.toURI().toString()));
+                        setGraphic(imageView);
+                    } else {
+                        imageView.setImage(new Image(getClass().getResource("C:\\Users\\Surface\\Pictures").toExternalForm()));
+                        setGraphic(imageView);                    }
                 }
             }
         });
+
         imageColumn.setCellValueFactory(cell -> cell.getValue().imageBase64Property());
 
         // غیرفعال کردن دکمه‌ها وقتی چیزی انتخاب نشده
@@ -119,37 +139,285 @@ public class RestaurantPanelController {
         deleteFoodBtn.disableProperty().bind(foodsTableView.getSelectionModel().selectedItemProperty().isNull());
 
         // رویداد دکمه‌ها
-        showFoodsBtn.setOnAction(e -> loadFoodsForSelectedMenu());
-        editMenuBtn.setOnAction(e -> editSelectedMenu());
+        showFoodsBtn.setOnAction(e -> showFoodSelectorForMenu());
+        //editMenuBtn.setOnAction(e -> editSelectedMenu());
         deleteMenuBtn.setOnAction(e -> deleteSelectedMenu());
+        addMenuBtn.setOnAction(e -> addMenu());
         addFoodBtn.setOnAction(e -> addFoodtoRestaurant());
         editFoodBtn.setOnAction(e -> editSelectedFood());
         deleteFoodBtn.setOnAction(e -> deleteSelectedFood());
+        backBtn.setOnAction(e -> gotoPreviousPage());
     }
 
     // ----- اکشن‌ها -----
 
-    private void loadFoodsForSelectedMenu() {
-        Menu menu = menuTableView.getSelectionModel().getSelectedItem();
-        if (menu == null) return;
-        foodsData.setAll(menu.getItems());
+    private void gotoPreviousPage() {
+        try {
+            Parent sellerPanel = FXMLLoader.load(getClass().getResource("/Views/SellerPanel.fxml"));
+            Scene scene = new Scene(sellerPanel);
+            Stage stage = (Stage) backBtn.getScene().getWindow(); // یا هر نودی که داری
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("خطا", "مشکل در باز کردن صفحه قبل.");
+        }
     }
 
-    private void editSelectedMenu() {
+    private void showFoodSelectorForMenu() {
         Menu menu = menuTableView.getSelectionModel().getSelectedItem();
         if (menu == null) return;
-        System.out.println("ویرایش منو: id=" + menu.getId() + ", name=" + menu.getTitle());
-        // TODO: باز کردن Dialog یا صفحه ویرایش
+
+        Dialog<List<Item>> dialog = new Dialog<>();
+        dialog.setTitle("مدیریت آیتم‌های منو");
+        dialog.setHeaderText("غذاهای مربوط به منو: " + menu.getTitle());
+
+        ButtonType applyButtonType = new ButtonType("اعمال تغییرات", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(applyButtonType, ButtonType.CANCEL);
+
+        TableView<Item> table = new TableView<>();
+        table.setEditable(true); // 💡 جدول باید قابل ویرایش باشه
+
+        TableColumn<Item, Boolean> selectCol = new TableColumn<>("انتخاب");
+        selectCol.setEditable(true);
+
+        TableColumn<Item, String> nameCol = new TableColumn<>("نام غذا");
+
+        // ساخت map برای نگهداری وضعیت تیک‌خورده بودن آیتم‌ها
+        Map<Item, BooleanProperty> selectedMap = new HashMap<>();
+        for (Item item : allFoods) {
+            boolean selected = menu.getItems().stream().anyMatch(i -> i.getId() == item.getId()); // مقایسه براساس ID
+            BooleanProperty selectedProp = new SimpleBooleanProperty(selected);
+            selectedMap.put(item, selectedProp);
+        }
+
+        // اتصال تیک‌ها به selectedMap
+        selectCol.setCellValueFactory(cellData -> selectedMap.get(cellData.getValue()));
+
+        // ✅ اتصال CheckBox به وضعیت قابل ویرایش
+        selectCol.setCellFactory(column -> {
+            CheckBoxTableCell<Item, Boolean> cell = new CheckBoxTableCell<>();
+            cell.setEditable(true);
+            return cell;
+        });
+
+        nameCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
+
+        table.getColumns().addAll(selectCol, nameCol);
+        table.setItems(FXCollections.observableArrayList(allFoods));
+
+        VBox vbox = new VBox(table);
+        vbox.setPadding(new Insets(10));
+        dialog.getDialogPane().setContent(vbox);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == applyButtonType) {
+                List<Item> selectedItems = new ArrayList<>();
+                for (Map.Entry<Item, BooleanProperty> entry : selectedMap.entrySet()) {
+                    if (entry.getValue().get()) {
+                        selectedItems.add(entry.getKey());
+                    }
+                }
+                return selectedItems;
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(newItemList -> {
+            List<Item> previousItems = new ArrayList<>(menu.getItems()); // کپی از آیتم‌های قبلی
+            List<Item> addedItems = new ArrayList<>();
+            List<Item> removedItems = new ArrayList<>();
+
+            Set<Integer> newIds = newItemList.stream().map(Item::getId).collect(Collectors.toSet());
+            Set<Integer> oldIds = previousItems.stream().map(Item::getId).collect(Collectors.toSet());
+
+            for (Item item : newItemList) {
+                if (!oldIds.contains(item.getId())) {
+                    addedItems.add(item);
+                }
+            }
+
+            for (Item item : previousItems) {
+                if (!newIds.contains(item.getId())) {
+                    removedItems.add(item);
+                }
+            }
+
+            System.out.println("✅ آیتم‌های اضافه شده:");
+            addedItems.forEach(i -> System.out.println("➕ " + i.getId() + " - " + i.getName()));
+
+            System.out.println("❌ آیتم‌های حذف شده:");
+            removedItems.forEach(i -> System.out.println("➖ " + i.getId() + " - " + i.getName()));
+
+            // 🔄 ارسال به بک‌اند (تو باید این متد رو بسازی)
+            updateMenuItems(resID, menu.getTitle(), addedItems, removedItems);
+        });
     }
+
+    private void updateMenuItems(String restaurantId, String menuTitle, List<Item> addedItems, List<Item> removedItems) {
+        int totalRequests = addedItems.size() + removedItems.size();
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger completedCount = new AtomicInteger(0);
+
+        if (totalRequests == 0) {
+            System.out.println("هیچ آیتمی برای بروزرسانی وجود ندارد.");
+            return;
+        }
+
+        Consumer<ApiResponse> callback = response -> {
+            int completed = completedCount.incrementAndGet();
+
+            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
+                successCount.incrementAndGet();
+            } else {
+                System.out.println("❌ خطا در ارسال درخواست: " + response.getStatusCode() + " | " + response.getBody());
+            }
+
+            if (completed == totalRequests) {
+                if (successCount.get() == totalRequests) {
+                    System.out.println("✅ همه آیتم‌ها با موفقیت بروزرسانی شدند.");
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "همه آیتم‌ها با موفقیت بروزرسانی شدند.");
+                        seedSampleData();
+                        alert.showAndWait();
+                    });
+                } else {
+                    System.out.println("⚠️ برخی آیتم‌ها بروزرسانی نشدند.");
+                    Platform.runLater(() -> {
+                        Alert alert = new Alert(Alert.AlertType.WARNING, "برخی از آیتم‌ها بروزرسانی نشدند. جزئیات در کنسول.");
+                        alert.showAndWait();
+                    });
+                }
+            }
+        };
+
+        // ارسال درخواست‌های اضافه کردن
+        for (Item item : addedItems) {
+            RestaurantNetwork.addItemToMenu(restaurantId, menuTitle, String.valueOf(item.getId()), callback);
+        }
+
+        // ارسال درخواست‌های حذف
+        for (Item item : removedItems) {
+            RestaurantNetwork.deleteItemFromMenu(restaurantId, menuTitle, String.valueOf(item.getId()), callback);
+        }
+    }
+
+    private void addMenu() {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("اضافه کردن منو");
+        dialog.setHeaderText("عنوان منو را وارد کنید:");
+
+        ButtonType addButtonType = new ButtonType("افزودن", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+
+        TextField titleField = new TextField();
+        titleField.setPromptText("عنوان");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.add(new Label("عنوان:"), 0, 0);
+        grid.add(titleField, 1, 0);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // وقتی دکمه OK زده شد، مقدار title برگردون
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == addButtonType) {
+                String title = titleField.getText();
+                if (title == null || title.trim().isEmpty()) {
+                    showAlert("خطا", "عنوان نمی‌تواند خالی باشد.");
+                    return null;
+                }
+                return title.trim();
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(title -> {
+            JsonObject json = new JsonObject();
+            json.addProperty("title", title);
+
+            // ارسال به سرور
+            RestaurantNetwork.addMenu(resID, json, apiResponse -> {
+                Platform.runLater(() -> {
+                    if (apiResponse.getStatusCode() >= 200 && apiResponse.getStatusCode() < 300) {
+                        loadMenus(resID);
+                        showAlert("موفقیت", "منو با موفقیت اضافه شد.");
+                    } else {
+                        showAlert("خطا " + apiResponse.getStatusCode(), apiResponse.getBody());
+                    }
+                });
+            });
+        });
+    }
+
+//    private void editSelectedMenu() {
+//        Menu menu = menuTableView.getSelectionModel().getSelectedItem();
+//        if (menu == null) return;
+//        Dialog<String> dialog = new Dialog<>();
+//        dialog.setTitle("تغییر دادن منو");
+//        dialog.setHeaderText("عنوان منو را وارد کنید:");
+//
+//        ButtonType addButtonType = new ButtonType("تغییر", ButtonBar.ButtonData.OK_DONE);
+//        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+//
+//        TextField titleField = new TextField();
+//        titleField.setPromptText(menu.getTitle());
+//
+//        GridPane grid = new GridPane();
+//        grid.setHgap(10);
+//        grid.setVgap(10);
+//        grid.setPadding(new Insets(20, 150, 10, 10));
+//        grid.add(new Label("عنوان:"), 0, 0);
+//        grid.add(titleField, 1, 0);
+//
+//        dialog.getDialogPane().setContent(grid);
+//
+//        dialog.setResultConverter(dialogButton -> {
+//            if (dialogButton == addButtonType) {
+//                String title = titleField.getText();
+//                if (title == null || title.trim().isEmpty()) {
+//                    return menu.getTitle();
+//                }
+//                return title.trim();
+//            }
+//            return null;
+//        });
+//
+//        dialog.showAndWait().ifPresent(title -> {
+//            JsonObject json = new JsonObject();
+//            json.addProperty("title", title);
+//            RestaurantNetwork.addMenu(resID, json, apiResponse -> {
+//                Platform.runLater(() -> {
+//                    if (apiResponse.getStatusCode() >= 200 && apiResponse.getStatusCode() < 300) {
+//                        loadMenus(resID);
+//                        showAlert("موفقیت", "منو با موفقیت اضافه شد.");
+//                    } else {
+//                        showAlert("خطا " + apiResponse.getStatusCode(), apiResponse.getBody());
+//                    }
+//                });
+//            });
+//        });
+//    }
 
     private void deleteSelectedMenu() {
         Menu menu = menuTableView.getSelectionModel().getSelectedItem();
         if (menu == null) return;
 
         if (confirm("حذف منو", "آیا مطمئن هستید؟")) {
-            // TODO: فراخوانی API حذف منو با menu.getId()
-            menuData.remove(menu);
-            foodsData.clear();
+            RestaurantNetwork.deleteMenu(resID,menu.getTitle(),apiResponse -> {
+                Platform.runLater(() -> {
+                    if (apiResponse.getStatusCode() == 200 ) {
+                        seedSampleData();
+                        showAlert("موفقیت", "منو با موفقیت حذف شد.");
+                    } else {
+                        // خطا — ارور رو نشون بده
+                        showAlert(String.valueOf(apiResponse.getStatusCode()),  apiResponse.getBody());
+                    }
+                });
+            });
         }
     }
 
@@ -255,26 +523,25 @@ public class RestaurantPanelController {
                     }
                     return item;
                 } catch (Exception e) {
-                    e.printStackTrace(); // نمایش بهتر خطا
+                    e.printStackTrace();
                     showAlert("خطا", "لطفاً مقادیر را درست وارد کنید.");
                     return null;
                 }
             }
             return null;
         });
+        System.out.println("editing...");
         dialog.showAndWait().ifPresent(item5 -> {
             System.out.println(json.toString());
-            RestaurantNetwork.updateItem(resID, json, String.valueOf(item5.getId()), apiResponse -> {
-                System.out.println(apiResponse.getBody());
+            RestaurantNetwork.updateItem(resID, json, String.valueOf(item.getId()), apiResponse -> {
+                System.out.println("RESPONSE: " + apiResponse.getStatusCode());
 
-                Platform.runLater(() -> {  // چون ممکنه این callback در thread غیر UI باشه، حتما UI update رو توی Platform.runLater انجام بده
+                Platform.runLater(() -> {
                     if (apiResponse.getStatusCode() >= 200 && apiResponse.getStatusCode() < 300) {
-                        // موفقیت — جدول رو آپدیت کن
                         System.out.println(apiResponse.getBody());
                         seedSampleData();
-                        showAlert("موفقیت", "آیتم با موفقیت اضافه شد.");
+                        showAlert("موفقیت", apiResponse.getBody());
                     } else {
-                        // خطا — ارور رو نشون بده
                         showAlert(String.valueOf(apiResponse.getStatusCode()),  apiResponse.getBody());
                     }
                 });
@@ -423,9 +690,6 @@ public class RestaurantPanelController {
     }
 
 
-    // ----- کمکی -----
-
-
     private boolean confirm(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, msg, ButtonType.YES, ButtonType.NO);
         alert.setTitle(title);
@@ -433,16 +697,6 @@ public class RestaurantPanelController {
         return alert.showAndWait().filter(btn -> btn == ButtonType.YES).isPresent();
     }
 
-    private Image decodeBase64ToImage(String b64) {
-        try {
-            byte[] bytes = Base64.getDecoder().decode(b64);
-            return new Image(new ByteArrayInputStream(bytes));
-        } catch (Exception ex) {
-            // تصویر نامعتبر
-            byte[] fallback = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...".getBytes(StandardCharsets.UTF_8); // یا هیچی
-            return null;
-        }
-    }
     public static String resID;
     // داده تستی
     private void seedSampleData() {
@@ -465,32 +719,48 @@ public class RestaurantPanelController {
 
     private void loadMenus(String restaurantId) {
         RestaurantNetwork.getMenus(restaurantId, apiResponse -> {
-            System.out.println("im calling");
-
-            if (apiResponse.getBody() == null) {
-                return;
-            }
-
+            if (apiResponse.getBody() == null) return;
+            System.out.println(apiResponse.getStatusCode());
             if (apiResponse.getStatusCode() == 200) {
-                String json = (String) apiResponse.getBody(); // چون نوع body هنوز String هست
-                System.out.println("kiram to gpt");
+                System.out.println("imdone");
+                String json = (String) apiResponse.getBody();
                 Gson gson = new Gson();
-                Type type = new TypeToken<List<Map<String, Object>>>() {
-                }.getType();
+                Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
                 List<Map<String, Object>> menus = gson.fromJson(json, type);
+
+                menuData.clear(); // لیست observable مربوط به TableView
 
                 for (Map<String, Object> map : menus) {
                     Menu menu = new Menu();
                     menu.setId(Long.parseLong(map.get("id").toString()));
                     menu.setTitle(map.get("title").toString());
+
+                    // استخراج آیتم‌ها
+                    List<Item> items = new ArrayList<>();
+                    List<Map<String, Object>> itemMaps = (List<Map<String, Object>>) map.get("items");
+                    if (itemMaps != null) {
+                        for (Map<String, Object> itemMap : itemMaps) {
+                            Item item = new Item();
+                            item.setId((int) Double.parseDouble(itemMap.get("id").toString()));
+                            item.setName(itemMap.get("name").toString());
+                            item.setDescription(itemMap.get("description").toString());
+                            item.setPrice((int) Double.parseDouble(itemMap.get("price").toString()));
+                            item.setSupply((int) Double.parseDouble(itemMap.get("supply").toString()));
+                            item.setImageBase64(itemMap.get("imageBase64") != null ? itemMap.get("imageBase64").toString() : "");
+                            items.add(item);
+                        }
+                    }
+
+                    menu.setItems(FXCollections.observableArrayList(items));
                     menuData.add(menu);
                 }
             } else {
                 System.out.println("خطا در دریافت منوها: " + apiResponse.getBody());
             }
         });
-    }
 
+    }
+    private List <Item> allFoods = new ArrayList<>();
     private void loadItems(String restaurantId) {
         RestaurantNetwork.getItems(restaurantId, apiResponse -> {
             if (apiResponse.getStatusCode() == 200) {
@@ -507,6 +777,7 @@ public class RestaurantPanelController {
 
                 Platform.runLater(() -> {
                     foodsData.clear();
+                    allFoods.clear();
                     for (Map<String, Object> map : items) {
                         Item item = new Item();
                         item.setId((int) Double.parseDouble(map.get("id").toString()));
@@ -515,6 +786,7 @@ public class RestaurantPanelController {
                         item.setImageBase64(map.get("image") != null ? map.get("image").toString() : "");
 
                         foodsData.add(item);
+                        allFoods.add(item); // همین‌جا ذخیره کن
                     }
                 });
 

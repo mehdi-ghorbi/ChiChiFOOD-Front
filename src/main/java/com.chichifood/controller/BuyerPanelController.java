@@ -1,6 +1,5 @@
 package com.chichifood.controller;
 
-import com.chichifood.model.Item;
 import com.chichifood.model.Restaurant;
 import com.chichifood.model.User;
 import com.chichifood.network.BuyerNetwork;
@@ -23,9 +22,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.chichifood.network.SessionManager.showAlert;
 
@@ -69,7 +66,7 @@ public class BuyerPanelController {
                         }
 
                         try {
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/VendorsList.fxml"));
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/restaurants-view.fxml"));
                             Parent root = loader.load();
 
                             VendorsViewsController controller = loader.getController();
@@ -90,73 +87,45 @@ public class BuyerPanelController {
         itemSearchButton.setOnAction(event -> {
             String name = itemName.getText();
             String price = itemPrice.getText();
-
-            // تبدیل رشته وارد شده به لیست کلیدواژه
-            List<String> keywords = Arrays.stream(itemKeywords.getText().split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .collect(Collectors.toList());
-
-            int itemPriceInt = 0;
-            try {
-                itemPriceInt = Integer.parseInt(price);
-            } catch (NumberFormatException e) {
-                // مدیریت ارور برای مقدار نامعتبر
-                System.out.println("Invalid price: " + price);
-                return;
-            }
-
-            BuyerNetwork.getItemsList(name, itemPriceInt, keywords, apiResponse -> {
+            String keywords = itemKeywords.getText();
+            BuyerNetwork.getVendorsList(search, keywords, apiResponse -> {
                 Platform.runLater(() -> {
                     int statusCode = apiResponse.getStatusCode();
                     String body = apiResponse.getBody();
 
-                    List<Item> itemList = new ArrayList<>();
+                    List<Restaurant> restaurantList = new ArrayList<>();
                     if (statusCode == 200) {
                         JsonObject jsonObject = JsonParser.parseString(body).getAsJsonObject();
-                        JsonArray itemsArray = jsonObject.getAsJsonArray("vendors"); // فرض بر این که کلید همین است
-
-                        for (JsonElement itemElement : itemsArray) {
-                            JsonObject itemJson = itemElement.getAsJsonObject();
-
-                            // استخراج آرایه keywords
-                            List<String> itemKeywords = new ArrayList<>();
-                            JsonArray keywordsJsonArray = itemJson.getAsJsonArray("keywords");
-                            for (JsonElement keywordElem : keywordsJsonArray) {
-                                itemKeywords.add(keywordElem.getAsString());
-                            }
-
-                            Item item = new Item(
-                                    itemJson.get("id").getAsInt(),
-                                    itemJson.get("name").getAsString(),
-                                    itemJson.get("imageBase64").getAsString(),
-                                    itemJson.get("description").getAsString(),
-                                    itemJson.get("vendor_id").getAsInt(),
-                                    itemJson.get("price").getAsInt(),
-                                    itemJson.get("supply").getAsInt(),
-                                    itemKeywords // فرض بر اینکه کانستراکتور Item این لیست رو می‌گیره
+                        JsonArray vendorsArray = jsonObject.getAsJsonArray("vendors");
+                        for (JsonElement vendorElement : vendorsArray) {
+                            JsonObject vendorJson = vendorElement.getAsJsonObject();
+                            Restaurant restaurant = new Restaurant(
+                                    vendorJson.get("id").getAsInt(),
+                                    vendorJson.get("name").getAsString(),
+                                    vendorJson.get("address").getAsString(),
+                                    vendorJson.get("phone").getAsString(),
+                                    vendorJson.get("logo").getAsString(),
+                                    vendorJson.get("tax_fee").getAsInt(),
+                                    vendorJson.get("additional_fee").getAsInt()
                             );
-                            itemList.add(item);
+                            restaurantList.add(restaurant);
                         }
 
                         try {
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/items-list.fxml")); // مسیر صحیح
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/restaurants-view.fxml"));
                             Parent root = loader.load();
 
-                            ItemsListController controller = loader.getController(); // کنترلر صحیح
-                            controller.setItems(itemList);
+                            VendorsViewsController controller = loader.getController();
+                            controller.setVendors(restaurantList);
 
                             Stage stage = new Stage();
-                            stage.setTitle("Items List");
+                            stage.setTitle("Vendors List");
                             stage.setScene(new Scene(root));
                             stage.show();
-
-                            ((Stage) itemSearchButton.getScene().getWindow()).close();
+                            ((Stage) vendorSearchButton.getScene().getWindow()).close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    } else {
-                        System.out.println("Error: " + statusCode + " - " + body);
                     }
                 });
             });

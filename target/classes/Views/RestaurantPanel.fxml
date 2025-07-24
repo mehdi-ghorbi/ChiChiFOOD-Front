@@ -29,7 +29,7 @@
                 <Button fx:id="showFoodsBtn" text="نمایش غذاها" />
                 <Button fx:id="editMenuBtn" text="ویرایش منو" />
                 <Button fx:id="deleteMenuBtn" text="حذف منو" />
-                <Button fx:id="addMenuBtn"  text="افزودن منو" />
+                <Button fx:id="addMenuBtn" text="افزودن منو" />
             </HBox>
         </VBox>
     </center>
@@ -54,6 +54,7 @@
                 <Button fx:id="editFoodBtn" text="ویرایش غذا" />
                 <Button fx:id="deleteFoodBtn" text="حذف غذا" />
                 <Button fx:id="addFoodBtn" text="افزودن غذا" />
+                <Button fx:id="backBtn" text="برگشت" />
             </HBox>
         </VBox>
     </bottom>
