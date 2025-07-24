@@ -155,9 +155,131 @@ public class RestaurantPanelController {
 
     private void editSelectedFood() {
         Item item = foodsTableView.getSelectionModel().getSelectedItem();
+        JsonObject json = new JsonObject();
         if (item == null) return;
-        System.out.println("ویرایش غذا: id=" + item.getId() + ", name=" + item.getName());
-        // TODO: باز کردن فرم ویرایش غذا
+        Dialog<Item> dialog = new Dialog<>();
+        dialog.setTitle("تغیر غذا ");
+        dialog.setHeaderText("مشخصات غذا را وارد کنید:");
+        ButtonType addButtonType = new ButtonType("تغیر دادن", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+        TextField nameField = new TextField();
+        TextField imageField = new TextField();
+        imageField.setEditable(false); // نذار دستی تغییر بده
+
+        Button browseImageButton = new Button("انتخاب عکس");
+        browseImageButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("انتخاب فایل تصویر");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("تصاویر", "*.png", "*.jpg", "*.jpeg", "*.bmp")
+            );
+            File selectedFile = fileChooser.showOpenDialog(dialog.getDialogPane().getScene().getWindow());
+            if (selectedFile != null) {
+                imageField.setText(selectedFile.getAbsolutePath()); // ذخیره مسیر کامل
+            }
+        });
+        TextArea descriptionField = new TextArea();
+        TextField priceField = new TextField();
+        TextField supplyField = new TextField();
+        TextField keywordsField = new TextField();
+        nameField.setPromptText(item.getName());
+        imageField.setPromptText(item.getImageBase64());
+        descriptionField.setPromptText(item.getDescription());
+        priceField.setPromptText(String.valueOf(item.getPrice()));
+        supplyField.setPromptText(String.valueOf(item.getSupply()));
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        grid.add(new Label("نام:"), 0, 0);
+        grid.add(nameField, 1, 0);
+        grid.add(new Label("تصویر (مسیر فایل):"), 0, 1);
+        HBox imageBox = new HBox(10, imageField, browseImageButton);
+        grid.add(imageBox, 1, 1);
+        grid.add(new Label("توضیحات:"), 0, 2);
+        grid.add(descriptionField, 1, 2);
+        grid.add(new Label("قیمت:"), 0, 3);
+        grid.add(priceField, 1, 3);
+        grid.add(new Label("موجودی:"), 0, 4);
+        grid.add(supplyField, 1, 4);
+        grid.add(new Label("کلمات کلیدی (با , جدا کن):"), 0, 5);
+        grid.add(keywordsField, 1, 5);
+
+        dialog.getDialogPane().setContent(grid);
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == addButtonType) {
+                try {
+
+                    Item item2 = new Item();
+                    if (!(nameField.getText().isEmpty() || nameField.getText().equals("") || nameField.getText().isBlank())) {
+                        item.setName(nameField.getText());
+                        json.addProperty("name", item.getName());
+                    }
+                    if (!(priceField.getText().isEmpty() || priceField.getText().equals("") || priceField.getText().isBlank())) {
+                        item.setPrice(Integer.parseInt(priceField.getText()));
+                        json.addProperty("price", item.getPrice());
+
+                    }
+                    if (!(imageField.getText().isEmpty() || imageField.getText().equals("") || imageField.getText().isBlank())) {
+                        item.setImageBase64(imageField.getText());
+                        json.addProperty("imageBase64", item.getImageBase64());
+                    }
+                    if (!(descriptionField.getText().isEmpty() || descriptionField.getText().equals("") || descriptionField.getText().isBlank())) {
+                        item.setDescription(descriptionField.getText());
+                        json.addProperty("description", item.getDescription());
+                    }
+                    if (!(supplyField.getText().isEmpty() || supplyField.getText().equals("") || supplyField.getText().isBlank())) {
+                        item.setSupply(Integer.parseInt(supplyField.getText()));
+                        json.addProperty("supply", item.getSupply());
+
+                    }
+                    if (!(keywordsField.getText().isEmpty() || keywordsField.getText().isBlank() || keywordsField.getText().equals(""))) {
+                        String rawKeywords = keywordsField.getText();
+                        List<String> keywords = new ArrayList<>();
+                        if (rawKeywords != null && !rawKeywords.isBlank()) {
+                            String[] keywordsArray = rawKeywords.split(",");
+                            for (String k : keywordsArray) {
+                                String trimmed = k.trim();
+                                if (!trimmed.isEmpty()) {
+                                    keywords.add(trimmed);
+                                }
+                            }
+                        }
+                        item.setKeywords(keywords);
+                        JsonArray keywordsArray = new JsonArray();
+                        for (String keyword : item.getKeywords()) {
+                            keywordsArray.add(keyword);
+                        }
+                        json.add("keywords", keywordsArray);
+                    }
+                    return item;
+                } catch (Exception e) {
+                    e.printStackTrace(); // نمایش بهتر خطا
+                    showAlert("خطا", "لطفاً مقادیر را درست وارد کنید.");
+                    return null;
+                }
+            }
+            return null;
+        });
+        dialog.showAndWait().ifPresent(item5 -> {
+            System.out.println(json.toString());
+            RestaurantNetwork.updateItem(resID, json, String.valueOf(item5.getId()), apiResponse -> {
+                System.out.println(apiResponse.getBody());
+
+                Platform.runLater(() -> {  // چون ممکنه این callback در thread غیر UI باشه، حتما UI update رو توی Platform.runLater انجام بده
+                    if (apiResponse.getStatusCode() >= 200 && apiResponse.getStatusCode() < 300) {
+                        // موفقیت — جدول رو آپدیت کن
+                        System.out.println(apiResponse.getBody());
+                        seedSampleData();
+                        showAlert("موفقیت", "آیتم با موفقیت اضافه شد.");
+                    } else {
+                        // خطا — ارور رو نشون بده
+                        showAlert(String.valueOf(apiResponse.getStatusCode()),  apiResponse.getBody());
+                    }
+                });
+            });
+        });
     }
 
     private void deleteSelectedFood() {
@@ -237,6 +359,7 @@ public class RestaurantPanelController {
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
                 try {
+
                     Item item = new Item();
                     item.setName(nameField.getText());
                     item.setImageBase64(imageField.getText());

@@ -134,6 +134,39 @@ public class RestaurantNetwork {
                 });
 
     }
+
+
+
+    public static void updateItem(String restaurantId, JsonObject jsonObject, String itemID, Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        String url = "http://localhost:8569/restaurants/" + restaurantId+"/item/" + itemID;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+
+                    callback.accept(new ApiResponse(statusCode, body));
+
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+
+    }
+
+
+
     public static void deleteItem(String restaurantId,String itemID, Consumer<ApiResponse> callback) {
         String token = SessionManager.getToken();
         if (token == null || token.isEmpty()) {
