@@ -12,13 +12,32 @@ public class Item {
     private final StringProperty name = new SimpleStringProperty();
     private final StringProperty imageBase64 = new SimpleStringProperty();
     private final StringProperty description = new SimpleStringProperty();
+
+    public int getVendorId() {
+        return vendorId.get();
+    }
+
+    public IntegerProperty vendorIdProperty() {
+        return vendorId;
+    }
+
+    private final IntegerProperty vendorId = new SimpleIntegerProperty();
     private final IntegerProperty price = new SimpleIntegerProperty();
     private final IntegerProperty supply = new SimpleIntegerProperty();
 
     private final ListProperty<String> keywords = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<Menu> menus = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-
+    public Item(Integer id, String name, String imageBase64, String description,Integer vendorId, Integer price, Integer supply, List<String> keywords) {
+        this.id.set(id);
+        this.name.set(name);
+        this.imageBase64.set(imageBase64);
+        this.description.set(description);
+        this.vendorId.set(vendorId);
+        this.price.set(price);
+        this.supply.set(supply);
+        this.keywords.setAll(keywords);
+    }
     private Restaurant restaurant;
 
     public int getId() { return id.get(); }
