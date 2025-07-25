@@ -24,11 +24,13 @@ public class SellerPanelController {
 
     @FXML
     private Button restaurantPanelButton;
-
+    @FXML
+    private Button orderPanelButton;
     @FXML
     private Button LogoutButton;
 
     public void initialize() {
+
         profileButton.setOnAction(event -> {
         });
 
@@ -46,6 +48,7 @@ public class SellerPanelController {
                         if (responseCode == 200) {
                             JsonArray jsonArray = JsonParser.parseString(body).getAsJsonArray();
                             JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
+                            SessionManager.setRestaurantID(jsonObject.get("id").getAsString());
                             boolean isRestaurantConfirmed = jsonObject.get("isRestaurantConfirmed").getAsBoolean();
                             if (isRestaurantConfirmed) {
                                 // لود کردن پنل رستوران
@@ -75,6 +78,7 @@ public class SellerPanelController {
 
             });
         });
+
         LogoutButton.setOnAction(event -> {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8569/logout"))
@@ -94,6 +98,51 @@ public class SellerPanelController {
             stage.show();
 
 
+        });
+
+        orderPanelButton.setOnAction(event -> {
+            RestaurantNetwork.getRestaurants(apiResponse -> {
+                int responseCode = apiResponse.getStatusCode();
+                String body = apiResponse.getBody();
+
+                Platform.runLater(() -> {
+                    try {
+                        FXMLLoader loader;
+                        Scene scene;
+                        Stage stage = (Stage) restaurantPanelButton.getScene().getWindow();
+
+                        if (responseCode == 200) {
+                            JsonArray jsonArray = JsonParser.parseString(body).getAsJsonArray();
+                            JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
+                            SessionManager.setRestaurantID(jsonObject.get("id").getAsString());
+                            boolean isRestaurantConfirmed = jsonObject.get("isRestaurantConfirmed").getAsBoolean();
+                            if (isRestaurantConfirmed) {
+                                // لود کردن پنل رستوران
+                                loader = new FXMLLoader(getClass().getResource("/views/orderPanel.fxml"));
+                                scene = new Scene(loader.load());
+                                stage.setScene(scene);
+                                stage.setTitle("Order Panel");
+                            } else {
+                                showAlert("403", "Your Restaurant is not confirmed");
+                            }
+                        } else if (responseCode == 404) {
+                            // لود کردن صفحه ثبت رستوران
+                            loader = new FXMLLoader(getClass().getResource("/views/RestaurantSignup.fxml"));
+                            scene = new Scene(loader.load());
+                            stage.setScene(scene);
+                            stage.setTitle("Restaurant Signup");
+                        }else {
+                            showAlert(String.valueOf(responseCode), body);
+
+                        }
+
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+            });
         });
     }
 

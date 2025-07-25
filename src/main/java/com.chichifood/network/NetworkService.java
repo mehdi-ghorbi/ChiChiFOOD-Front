@@ -37,6 +37,7 @@ public class NetworkService {
                     return null;
                 });
     }
+
     public static void logout(Consumer<ApiResponse> callback) {
 
     }
