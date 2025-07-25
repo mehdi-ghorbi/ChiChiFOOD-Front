@@ -3,12 +3,14 @@ package com.chichifood.model;
 public class User {
     private String fullName;
     private String phone;
+    private int id;
     private String email;
     private String password;
     private String role;
     private String address;
     private String bankName;
     private String accountNumber;
+    private int isUserConfirmed;
 
     public User(String phone, String password) {
         this.phone = phone;
@@ -25,6 +27,13 @@ public class User {
         this.address = address;
         this.bankName = bankName;
         this.accountNumber = accountNumber;
+    }
+
+    public User(int id, String fullName, int isUserConfirmed) {
+        this.fullName = fullName;
+        this.isUserConfirmed = isUserConfirmed;
+        this.id = id;
+
     }
 
     public String getFullName() {
@@ -53,6 +62,21 @@ public class User {
 
     public String getBankName() {
         return bankName;
+    }
+
+    public int getId() {
+        return id;
+    }
+    public int getIsUserConfirmed() {
+        return isUserConfirmed;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setIsUserConfirmed(int isUserConfirmed) {
+        this.isUserConfirmed = isUserConfirmed;
     }
 
     public String getAccountNumber() {
