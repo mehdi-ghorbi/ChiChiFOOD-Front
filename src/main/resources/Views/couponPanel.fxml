@@ -13,16 +13,16 @@
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
 fx:controller="com.chichifood.controller.AdminCouponPanelController">
    <top>
-      <VBox alignment="TOP_CENTER" prefHeight="50.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+       <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Coupons" />
-            <TableView prefHeight="200.0" prefWidth="200.0">
+            <TableView  fx:id="couponTable" prefHeight="200.0" prefWidth="200.0">
               <columns>
                 <TableColumn fx:id="idColumn" prefWidth="75.0" text="id" />
                 <TableColumn fx:id="codeColumn" prefWidth="75.0" text="code" />
                   <TableColumn fx:id="typeColumn" prefWidth="75.0" text="type" />
                   <TableColumn fx:id="valueColumn" prefWidth="75.0" text="value" />
-                  <TableColumn fx:id="miinPriceColumn" prefWidth="75.0" text="minprice" />
+                  <TableColumn fx:id="minPriceColumn" prefWidth="75.0" text="minprice" />
                   <TableColumn fx:id="userCountColumn" prefWidth="75.0" text="userCount" />
                   <TableColumn fx:id="startDateColumn" prefWidth="75.0" text="startDate" />
                   <TableColumn fx:id="endDateColumn" prefWidth="75.0" text="endDate" />

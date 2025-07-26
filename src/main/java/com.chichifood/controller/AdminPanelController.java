@@ -63,7 +63,18 @@ public class AdminPanelController {
         });
 
     couponBtn.setOnAction(e -> {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/couponPanel.fxml"));
+            Parent root = loader.load();
 
+            Stage stage = (Stage) couponBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Admin - Coupons");
+            stage.show();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showAlert("Error", "Cannot load the admin coupon panel.");
+        }
     });
 
     restaurantBtn.setOnAction(e -> {
