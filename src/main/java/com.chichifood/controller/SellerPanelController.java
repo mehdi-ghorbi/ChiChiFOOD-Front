@@ -32,7 +32,19 @@ public class SellerPanelController {
     public void initialize() {
 
         profileButton.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/sellerProfile.fxml"));
+                Parent root = loader.load();
+                Stage stage = (Stage) profileButton.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Seller Profile");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("خطا", "مشکل در بارگذاری صفحه پروفایل");
+            }
         });
+
 
         restaurantPanelButton.setOnAction(event -> {
             RestaurantNetwork.getRestaurants(apiResponse -> {

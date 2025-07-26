@@ -8,7 +8,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
+
+import static com.chichifood.network.SessionManager.*;
 
 public class NetworkService {
 
@@ -82,6 +85,55 @@ public class NetworkService {
                 })
                 .exceptionally(e -> {
                     callback.accept(new ApiResponse(500, "Server Error"));
+                    return null;
+                });
+    }
+
+    public static void getProfile(Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8569/auth/profile"))
+                .header("Authorization", "Bearer " + token)
+                .GET()
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    ApiResponse apiResponse = new ApiResponse(response.statusCode(), response.body());
+                    callback.accept(apiResponse);
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Server Error"));
+                    return null;
+                });
+    }
+
+    public static void updateProfile(JsonObject jsonObject, Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8569/auth/profile"))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    ApiResponse apiResponse = new ApiResponse(response.statusCode(), response.body());
+                    callback.accept(apiResponse);
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Server Error: " + e.getMessage()));
                     return null;
                 });
     }

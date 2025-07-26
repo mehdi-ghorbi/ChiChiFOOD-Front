@@ -46,7 +46,8 @@ public class AdminPanelController {
         stage.setScene(new Scene(root));
         stage.show();
     })  ;
-        usersBtn.setOnAction(e -> {
+
+    usersBtn.setOnAction(e -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/adminUsersPanel.fxml"));
                 Parent root = loader.load();
@@ -61,9 +62,23 @@ public class AdminPanelController {
             }
         });
 
+    couponBtn.setOnAction(e -> {
 
+    });
 
+    restaurantBtn.setOnAction(e -> {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/adminRestaurantPanel.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) restaurantBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Admin - restaurants");
+            stage.show();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            showAlert("Error", "Cannot load the admin restaurants panel.");
+        }
+    });
     }
-
-
 }

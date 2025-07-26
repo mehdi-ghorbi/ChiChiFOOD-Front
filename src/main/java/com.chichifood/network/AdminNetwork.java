@@ -53,4 +53,142 @@ public class AdminNetwork {
                     return null;
                 });
     }
+
+    public static void disableUser(int userId, Consumer<ApiResponse> callback){
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("status", "rejected");
+        String url = "http://localhost:8569/admin/users/" + userId +"/status";
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .method("Patch", HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+                    callback.accept(new ApiResponse(statusCode, body));
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+    }
+
+    public static void enableUser(int userId, Consumer<ApiResponse> callback){
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("status", "approved");
+        String url = "http://localhost:8569/admin/users/" + userId +"/status";
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .method("Patch", HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+                    callback.accept(new ApiResponse(statusCode, body));
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+    }
+    public static void enableRestaurant(int resID, Consumer<ApiResponse> callback){
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("status", "approved");
+        String url = "http://localhost:8569/admin/restaurants/" + resID +"/status";
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .method("Patch", HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+                    callback.accept(new ApiResponse(statusCode, body));
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+    }
+    public static void disableRestaurant(int resID, Consumer<ApiResponse> callback){
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("status", "rejected");
+        String url = "http://localhost:8569/admin/restaurants/" + resID +"/status";
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .method("Patch", HttpRequest.BodyPublishers.ofString(jsonObject.toString()))
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+                    callback.accept(new ApiResponse(statusCode, body));
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+    }
+
+    public static void addItemToMenu(String restaurantId, String title, String itemID, Consumer<ApiResponse> callback) {
+
+    }
+    public static void getAllRestaurants(Consumer<ApiResponse> callback){
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+
+        HttpClient client = HttpClient.newHttpClient();
+        String url = "http://localhost:8569/admin/getAllRestaurants";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+                    callback.accept(new ApiResponse(statusCode, body));
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+    }
 }

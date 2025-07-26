@@ -9,6 +9,7 @@ public class User {
     private String role;
     private String address;
     private String bankName;
+    private String photo;
     private String accountNumber;
     private int isUserConfirmed;
 
@@ -17,16 +18,17 @@ public class User {
         this.password = password;
     }
 
-    public User(String fullName, String phone, String email, String password, String role,
-                String address, String bankName, String accountNumber) {
+
+    public User(String fullName, String phone, String email, String role,
+                String address, String bankName, String accountNumber, String photo) {
         this.fullName = fullName;
         this.phone = phone;
         this.email = email;
-        this.password = password;
         this.role = role;
         this.address = address;
         this.bankName = bankName;
         this.accountNumber = accountNumber;
+        this.photo = photo;
     }
 
     public User(int id, String fullName, int isUserConfirmed) {
@@ -34,6 +36,14 @@ public class User {
         this.isUserConfirmed = isUserConfirmed;
         this.id = id;
 
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String getFullName() {

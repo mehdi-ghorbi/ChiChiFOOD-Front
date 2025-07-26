@@ -50,20 +50,77 @@ public class AdminUsersPanelController {
         userIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         userStatusColumn.setCellValueFactory(new PropertyValueFactory<>("isUserConfirmed"));
+        backBtn.setOnAction(event -> {
+            handleBack();
+        });
+        disableUserBtn.setOnAction(event -> {
+            handleDisableUser();
+        });
+        enableUserBtn.setOnAction(event -> {
+            handleEnableUser();
+        });
 
         seedSampleData();
     }
 
     @FXML
     private void handleEnableUser() {
-        // TODO: کد فعال‌سازی کاربر
-        System.out.println("Enable user clicked");
+        User selectedUser = userTable.getSelectionModel().getSelectedItem();
+
+        if (selectedUser == null) {
+            showAlert("No Selection", "Please select a user from the table.");
+            return;
+        }
+
+        int id = selectedUser.getId();
+        int isUserConfirmed = selectedUser.getIsUserConfirmed();
+
+        if (isUserConfirmed == 1) {
+            showAlert("User Already Confirmed", "This user is already confirmed.");
+            return;
+        }
+
+        AdminNetwork.enableUser(id, apiResponse -> {
+            Platform.runLater(() -> {
+                if (apiResponse.getStatusCode() == 200) {
+                    showAlert(String.valueOf(apiResponse.getStatusCode()), "User has been successfully enabled.");
+                    seedSampleData(); // بروزرسانی جدول بعد از موفقیت
+                } else {
+                    showAlert("Error " + apiResponse.getStatusCode(), apiResponse.getBody());
+                }
+            });
+        });
     }
+
+
 
     @FXML
     private void handleDisableUser() {
-        // TODO: کد غیرفعال‌سازی کاربر
-        System.out.println("Disable user clicked");
+        User selectedUser = userTable.getSelectionModel().getSelectedItem();
+
+        if (selectedUser == null) {
+            showAlert("No Selection", "Please select a user from the table.");
+            return;
+        }
+
+        int id = selectedUser.getId();
+        int isUserConfirmed = selectedUser.getIsUserConfirmed();
+
+        if (isUserConfirmed == 0) {
+            showAlert("User Already Disabled", "This user is already disabled.");
+            return;
+        }
+
+        AdminNetwork.disableUser(id, apiResponse -> {
+            Platform.runLater(() -> {
+                if (apiResponse.getStatusCode() == 200) {
+                    showAlert("Success", "User has been successfully disabled.");
+                    seedSampleData(); // بروزرسانی جدول بعد از موفقیت
+                } else {
+                    showAlert("Error " + apiResponse.getStatusCode(), apiResponse.getBody());
+                }
+            });
+        });
     }
 
     @FXML
@@ -71,7 +128,6 @@ public class AdminUsersPanelController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/adminPanel.fxml"));
             Parent root = loader.load();
-
             Stage stage = (Stage) backBtn.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Admin - Users");

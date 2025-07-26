@@ -20,6 +20,11 @@ public class Restaurant {
         this.taxFee = taxFee;
         this.additionalFee = additionalFee;
     }
+    public Restaurant(int id, String name, boolean isRestaurantConfirmed) {
+        this.id = id;
+        this.name = name;
+        this.isRestaurantConfirmed = isRestaurantConfirmed;
+    }
 
     public int getId() {
         return id;
@@ -77,7 +82,7 @@ public class Restaurant {
         this.additionalFee = additionalFee;
     }
 
-    public boolean isRestaurantConfirmed() {
+    public boolean getIsRestaurantConfirmed() {
         return isRestaurantConfirmed;
     }
 
