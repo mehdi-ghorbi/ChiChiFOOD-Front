@@ -9,14 +9,12 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.chichifood.controller.ItemsListController">
 
-    <!-- بالای صفحه: دکمه برگشت -->
     <top>
         <HBox spacing="10" padding="10">
             <Button fx:id="backButton" text="Back"/>
         </HBox>
     </top>
 
-    <!-- وسط صفحه: لیست آیتم‌ها داخل ScrollPane -->
     <center>
         <ScrollPane fitToWidth="true">
             <VBox fx:id="itemsContainer" spacing="20" padding="10"/>
