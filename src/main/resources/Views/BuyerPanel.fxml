@@ -25,13 +25,15 @@
     </VBox>
 
     <VBox spacing="5" style="-fx-border-color: gray; -fx-border-width: 1; -fx-padding: 10;">
-        <Label style="-fx-font-weight: bold;" text="Orders" />
-        <VBox fx:id="ordersBox" minHeight="100" prefHeight="150" />
+        <children>
+            <Button fx:id="orderButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="537.0" text="Orders" textAlignment="CENTER" />
+        </children>
     </VBox>
+
 
     <VBox spacing="5" style="-fx-border-color: gray; -fx-border-width: 1; -fx-padding: 10;">
       <children>
-         <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="537.0" text="Your favorite restaurants" textAlignment="CENTER" />
+         <Button fx:id="favoriteButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="537.0" text="Your favorite restaurants" textAlignment="CENTER" />
       </children>
     </VBox>
 

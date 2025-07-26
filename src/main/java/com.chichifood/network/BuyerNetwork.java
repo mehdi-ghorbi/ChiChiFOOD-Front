@@ -16,7 +16,7 @@ import java.net.http.*;
 import java.util.function.Consumer;
 
 public class BuyerNetwork {
-    public static void getVendorsList(String vendorName, String keywords, Consumer<ApiResponse> callback) {
+    public static void getVendorsList(String vendorName, List<String> keywords, Consumer<ApiResponse> callback) {
         String token = SessionManager.getToken();
         if (token == null || token.isEmpty()) {
             callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
@@ -24,9 +24,15 @@ public class BuyerNetwork {
         }
 
         HttpClient client = HttpClient.newHttpClient();
+        JsonObject jsonRequest = new JsonObject();
+        jsonRequest.addProperty("search", vendorName);
 
-        String json = String.format("{\"search\": \"%s\", \"keywords\": \"%s\"}",
-                vendorName.replace("\"", "\\\""), keywords.replace("\"", "\\\""));
+        JsonArray keywordsArray = new JsonArray();
+        for (String keyword : keywords) {
+            keywordsArray.add(keyword);
+        }
+        jsonRequest.add("keywords", keywordsArray);
+        String json = new Gson().toJson(jsonRequest);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8569/vendors"))

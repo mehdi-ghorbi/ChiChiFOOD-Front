@@ -132,7 +132,6 @@ public class VendorsViewsController {
                 itemBox.setAlignment(Pos.CENTER_LEFT);
                 itemBox.setStyle("-fx-padding: 10; -fx-border-color: #ccc; -fx-border-width: 1;");
 
-                // عکس لوگو
                 ImageView logoView = new ImageView();
                 try {
                     byte[] imageBytes = Base64.getDecoder().decode(vendor.getLogoBase64());
