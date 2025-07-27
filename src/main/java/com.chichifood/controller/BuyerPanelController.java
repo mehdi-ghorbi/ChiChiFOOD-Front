@@ -86,8 +86,8 @@ public class BuyerPanelController {
 
                     List<Restaurant> restaurantList = new ArrayList<>();
                     if (statusCode == 200) {
-                        JsonObject jsonObject = JsonParser.parseString(body).getAsJsonObject();
-                        JsonArray vendorsArray = jsonObject.getAsJsonArray("vendors");
+                        JsonArray vendorsArray = JsonParser.parseString(body).getAsJsonArray();
+
                         for (JsonElement vendorElement : vendorsArray) {
                             JsonObject vendorJson = vendorElement.getAsJsonObject();
                             Restaurant restaurant = new Restaurant(
@@ -95,7 +95,7 @@ public class BuyerPanelController {
                                     vendorJson.get("name").getAsString(),
                                     vendorJson.get("address").getAsString(),
                                     vendorJson.get("phone").getAsString(),
-                                    vendorJson.get("logo").getAsString(),
+                                    vendorJson.get("logoBase64").getAsString(),
                                     vendorJson.get("tax_fee").getAsInt(),
                                     vendorJson.get("additional_fee").getAsInt()
                             );
