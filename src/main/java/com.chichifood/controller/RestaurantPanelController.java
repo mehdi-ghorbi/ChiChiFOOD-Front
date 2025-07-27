@@ -270,12 +270,12 @@ public class RestaurantPanelController {
             if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
                 successCount.incrementAndGet();
             } else {
-                System.out.println("❌ خطا در ارسال درخواست: " + response.getStatusCode() + " | " + response.getBody());
+                System.out.println(" خطا در ارسال درخواست: " + response.getStatusCode() + " | " + response.getBody());
             }
 
             if (completed == totalRequests) {
                 if (successCount.get() == totalRequests) {
-                    System.out.println("✅ همه آیتم‌ها با موفقیت بروزرسانی شدند.");
+                    System.out.println(" همه آیتم‌ها با موفقیت بروزرسانی شدند.");
                     Platform.runLater(() -> {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION, "همه آیتم‌ها با موفقیت بروزرسانی شدند.");
                         seedSampleData();

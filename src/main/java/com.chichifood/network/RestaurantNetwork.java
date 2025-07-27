@@ -85,8 +85,6 @@ public class RestaurantNetwork {
             callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
             return;
         }
-        System.out.println("hello1");
-
         HttpClient client = HttpClient.newHttpClient();
         Gson gson = new Gson();
         String url = "http://localhost:8569/restaurants/getMenus/" + restaurantId;

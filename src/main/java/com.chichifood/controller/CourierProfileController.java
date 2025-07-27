@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import static com.chichifood.network.SessionManager.showAlert;
 
-public class SellerProfileController {
+public class CourierProfileController {
 
     @FXML private Circle profileCircle;
     @FXML private Label nameLabel;
@@ -41,11 +41,11 @@ public class SellerProfileController {
         seedSampleData();
         backBtn.setOnAction(event -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/sellerPanel.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/courierPanel.fxml"));
                 Parent root = loader.load();
                 Stage stage = (Stage) backBtn.getScene().getWindow();
                 stage.setScene(new Scene(root));
-                stage.setTitle("Seller Profile");
+                stage.setTitle("Courier Profile");
                 stage.show();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -53,7 +53,7 @@ public class SellerProfileController {
             }
         });
         editBtn.setOnAction(event -> {
-                editProfile();
+            editProfile();
         });
     }
     private void editProfile() {
@@ -177,7 +177,6 @@ public class SellerProfileController {
     public void seedSampleData() {
         NetworkService.getProfile(apiResponse -> {
             JsonObject json = JsonParser.parseString(apiResponse.getBody()).getAsJsonObject();
-
             String fullName = json.has("name") ? json.get("name").getAsString() : "";
             String phone = json.has("phone") ? json.get("phone").getAsString() : "";
             String email = json.has("email") ? json.get("email").getAsString() : "";

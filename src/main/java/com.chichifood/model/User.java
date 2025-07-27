@@ -20,6 +20,19 @@ public class User {
 
 
     public User(String fullName, String phone, String email, String role,
+                String address, String bankName, String accountNumber, String photo, String password) {
+        this.fullName = fullName;
+        this.phone = phone;
+        this.email = email;
+        this.role = role;
+        this.address = address;
+        this.bankName = bankName;
+        this.accountNumber = accountNumber;
+        this.photo = photo;
+        this.password = password;
+
+    }
+    public User(String fullName, String phone, String email, String role,
                 String address, String bankName, String accountNumber, String photo) {
         this.fullName = fullName;
         this.phone = phone;
