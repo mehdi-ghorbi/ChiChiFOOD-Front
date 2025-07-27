@@ -65,7 +65,17 @@ public class CourierPanelController {
     }
 
     private void viewHistory() {
-        System.out.println("History button clicked");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/deliveryHistory.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) historyBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Delivery History");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("خطا", "مشکل در بارگذاری صفحه پروفایل");
+        }
     }
 
     private void logout() {

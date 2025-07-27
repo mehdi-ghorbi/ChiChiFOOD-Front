@@ -39,7 +39,7 @@ public class DeliveryPanelController {
         // اتصال ستون‌ها به فیلدهای کلاس Order
         addressColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDeliveryAddress()));
         feeColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getCourierFee()));
-        restaurantColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Restaurant " + cellData.getValue().getVendorID())); // فرضی
+        restaurantColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getVendorName()));
         loadSampleOrders();
         getID();
         if (doIHaveADelivery) {
@@ -75,6 +75,7 @@ public class DeliveryPanelController {
 
                             order.setId(json.has("id") && !json.get("id").isJsonNull() ? json.get("id").getAsInt() : 0);
                             order.setVendorID(json.has("vendor_id") && !json.get("vendor_id").isJsonNull() ? json.get("vendor_id").getAsInt() : 0);
+                            order.setVendorName(json.has("vendor_name") ? json.get("vendor_name").getAsString() : "");
                             order.setCourierFee(json.has("courier_fee") && !json.get("courier_fee").isJsonNull() ? json.get("courier_fee").getAsInt() : 0);
                             order.setDeliveryAddress(json.has("delivery_address") && !json.get("delivery_address").isJsonNull()
                                     ? json.get("delivery_address").getAsString()

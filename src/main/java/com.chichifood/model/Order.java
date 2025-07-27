@@ -11,6 +11,8 @@ public class Order {
 
     private int customerID;
 
+    private String vendorName;
+
     private int vendorID;
 
     private int couponID;
@@ -60,6 +62,14 @@ public class Order {
 
     public void setCreated_at(String created_at) {
         this.created_at = created_at;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
     }
 
     public OrderStatus getStatus() {
