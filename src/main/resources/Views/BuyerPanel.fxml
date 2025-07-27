@@ -3,38 +3,54 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="600" prefWidth="600" spacing="20" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chichifood.controller.BuyerPanelController">
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      fx:controller="com.chichifood.controller.BuyerPanelController"
+      prefWidth="800" prefHeight="600"
+      spacing="20"
+      style="-fx-padding: 20; -fx-background-color: #FFFFFF;">
 
-    <VBox spacing="5">
-        <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Vendors" />
-        <HBox alignment="CENTER_LEFT" spacing="10">
+    <HBox alignment="TOP_RIGHT">
+        <Region fx:id="spacer" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="profileButton"
+                text="👤"
+                style="-fx-background-color: #FF9800;
+                       -fx-text-fill: white;
+                       -fx-font-size: 18;
+                       -fx-background-radius: 50%;
+                       -fx-min-width: 40px;
+                       -fx-min-height: 40px;
+                       -fx-max-width: 40px;
+                       -fx-max-height: 40px;
+                       -fx-cursor: hand;" />
+    </HBox>
+
+    <VBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-padding: 15; -fx-background-radius: 10; -fx-border-color: #FF9800; -fx-border-width: 1;">
+        <Label text="Vendors" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333;" />
+        <HBox spacing="10">
             <TextField fx:id="searchRestaurant" promptText="Restaurant name" />
             <TextField fx:id="vendorKeywords" promptText="Keywords" />
-            <Button fx:id="vendorSearchButton" text="🔍" />
+            <Button fx:id="vendorSearchButton" text="🔍"
+                    style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6;" />
         </HBox>
     </VBox>
 
-    <VBox spacing="5">
-        <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Items" />
-        <HBox alignment="CENTER_LEFT" spacing="10">
+    <VBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-padding: 15; -fx-background-radius: 10; -fx-border-color: #FF9800; -fx-border-width: 1;">
+        <Label text="Items" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333;" />
+        <HBox spacing="10">
             <TextField fx:id="itemName" promptText="Name" />
             <TextField fx:id="itemPrice" promptText="Price (number)" />
             <TextField fx:id="itemKeywords" promptText="Keyword" />
-            <Button fx:id="itemSearchButton" text="🔍" />
+            <Button fx:id="itemSearchButton" text="🔍"
+                    style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6;" />
         </HBox>
     </VBox>
 
-    <VBox spacing="5" style="-fx-border-color: gray; -fx-border-width: 1; -fx-padding: 10;">
-        <children>
-            <Button fx:id="orderButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="537.0" text="Orders" textAlignment="CENTER" />
-        </children>
-    </VBox>
-
-
-    <VBox spacing="5" style="-fx-border-color: gray; -fx-border-width: 1; -fx-padding: 10;">
-      <children>
-         <Button fx:id="favoriteButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="537.0" text="Your favorite restaurants" textAlignment="CENTER" />
-      </children>
-    </VBox>
+    <HBox spacing="15" alignment="CENTER">
+        <Button fx:id="orderButton" text="Orders"
+                style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20; -fx-font-size: 14;" />
+        <Button fx:id="favoriteButton" text="Favorites"
+                style="-fx-background-color: #FFA726; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20; -fx-font-size: 14;" />
+    </HBox>
 
 </VBox>

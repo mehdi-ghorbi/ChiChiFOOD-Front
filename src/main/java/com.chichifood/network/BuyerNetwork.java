@@ -96,4 +96,53 @@ public class BuyerNetwork {
                     return null;
                 });
     }
+    public static void removeFavoritesRestaurants(int id, Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/buyer/favorites/" + id))
+                .header("Authorization", "Bearer " + token)
+                .DELETE()
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::statusCode)
+                .thenAccept(status -> {
+                    if (status == 200)
+                        callback.accept(new ApiResponse(200, "Deleted successfully"));
+                    else
+                        callback.accept(new ApiResponse(status, "Failed to delete"));
+                })
+                .exceptionally(ex -> {
+                    callback.accept(new ApiResponse(500, "Network error: " + ex.getMessage()));
+                    return null;
+                });
+    }
+    public static void getFavoritesRestaurants(Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/buyer/favorites"))
+                .header("Authorization", "Bearer " + token)
+                .GET()
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenAccept(body -> callback.accept(new ApiResponse(200, body)))
+                .exceptionally(ex -> {
+                    callback.accept(new ApiResponse(500, "Network error: " + ex.getMessage()));
+                    return null;
+                });
+    }
 }
