@@ -36,7 +36,7 @@ public class DeliveryHistoryController {
     public void initialize() {
         addressColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDeliveryAddress()));
         courierFeeColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getCourierFee()));
-        restaurantNameColumn.setCellValueFactory(data -> new SimpleStringProperty(getRestaurantName(data.getValue().getVendorID())));
+        restaurantNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getVendorName()));
 
         // load orders
         seedSampleData();
@@ -66,21 +66,20 @@ public class DeliveryHistoryController {
                 Platform.runLater(() -> {
                     try {
                         JsonArray jsonArray = JsonParser.parseString(apiResponse.getBody()).getAsJsonArray();
-                        allOrders.clear(); // پاک کردن داده‌های قبلی
+                        allOrders.clear();
 
                         for (JsonElement elem : jsonArray) {
                             JsonObject obj = elem.getAsJsonObject();
-
                             Order order = new Order();
                             order.setId(obj.get("id").getAsInt());
-                            order.setDeliveryAddress(obj.get("deliveryAddress").getAsString());
-                            order.setCourierFee(obj.has("courierFee") && !obj.get("courierFee").isJsonNull()
-                                    ? obj.get("courierFee").getAsInt()
-                                    : 0);
+                            order.setDeliveryAddress(obj.has("deliveryAddress") ? obj.get("deliveryAddress").getAsString() : "");
+                            order.setVendorName(obj.has("restaurantName") ? obj.get("restaurantName").getAsString() : "");
+                            order.setCourierFee(obj.has("courierFee") ? obj.get("courierFee").getAsInt() : 0);
                             order.setVendorID(obj.has("vendorID") && !obj.get("vendorID").isJsonNull()
                                     ? obj.get("vendorID").getAsInt()
                                     : 0);
-
+                            System.out.println(order.toString());
+                            System.out.println(order.getDeliveryAddress());
                             allOrders.add(order);
                         }
 
@@ -95,13 +94,14 @@ public class DeliveryHistoryController {
                 Platform.runLater(() -> showAlert("خطا", "عدم دریافت سفارش‌ها از سرور"));
             }
         });
+
     }
 
 
     private void filterOrders() {
         String keyword = searchField.getText().trim().toLowerCase();
         List<Order> filtered = allOrders.stream()
-                .filter(order -> getRestaurantName(order.getVendorID()).toLowerCase().contains(keyword))
+                .filter(order -> order.getVendorName().toLowerCase().contains(keyword))
                 .collect(Collectors.toList());
 
         orderTable.setItems(FXCollections.observableArrayList(filtered));
