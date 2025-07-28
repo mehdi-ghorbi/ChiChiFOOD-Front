@@ -4,26 +4,33 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.chichifood.controller.VendorsViewsController"
-            prefWidth="800.0" prefHeight="600.0">
+            prefWidth="800.0" prefHeight="600.0"
+            style="-fx-background-color: white;">
 
+    <!-- نوار بالا -->
     <top>
-        <HBox spacing="10">
+        <HBox spacing="10" alignment="CENTER_LEFT"
+              style="-fx-background-color: #FF6F00;">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
-            <Button fx:id="backButton" text="Back"/>
+            <Button fx:id="backButton" text="بازگشت"
+                    style="-fx-background-color: white; -fx-text-fill: #FF6F00; -fx-font-weight: bold; -fx-cursor: hand;"/>
         </HBox>
     </top>
 
+    <!-- بخش نمایش رستوران‌ها -->
     <center>
-        <ScrollPane fitToWidth="true">
-            <VBox fx:id="vendorsListBox" spacing="20">
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox fx:id="vendorsListBox" spacing="20"
+                  style="-fx-background-color: white;">
                 <padding>
-                    <Insets top="10" right="10" bottom="10" left="10"/>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
                 </padding>
             </VBox>
         </ScrollPane>

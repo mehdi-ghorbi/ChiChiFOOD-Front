@@ -20,7 +20,7 @@
     </HBox>
 
     <ScrollPane fitToWidth="true">
-        <VBox fx:id="favoritesContainer" spacing="10" />
+        <VBox fx:id="favoritesBox" spacing="10" />
     </ScrollPane>
 
 </VBox>

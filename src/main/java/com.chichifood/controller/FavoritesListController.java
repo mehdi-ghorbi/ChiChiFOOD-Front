@@ -20,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.json.JSONString;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -52,8 +53,8 @@ public class FavoritesListController {
             Platform.runLater(() -> {
                 int status = apiResponse.getStatusCode();
                 if (status == 200) {
-                    JsonObject json = JsonParser.parseString(apiResponse.getBody()).getAsJsonObject();
-                    JsonArray array = json.getAsJsonArray("restaurants");
+
+                    JsonArray array = JsonParser.parseString(apiResponse.getBody()).getAsJsonArray();
 
                     for (JsonElement el : array) {
                         JsonObject obj = el.getAsJsonObject();
@@ -62,7 +63,7 @@ public class FavoritesListController {
                                 obj.get("name").getAsString(),
                                 obj.get("address").getAsString(),
                                 obj.get("phone").getAsString(),
-                                obj.get("logo").getAsString(),
+                                obj.get("logoBase64").getAsString(),
                                 obj.get("tax_fee").getAsInt(),
                                 obj.get("additional_fee").getAsInt()
                         );

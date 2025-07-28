@@ -1,9 +1,13 @@
 package com.chichifood.controller;
 
 import com.chichifood.model.Restaurant;
+import com.chichifood.network.BuyerNetwork;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -76,18 +81,60 @@ public class VendorsViewsController {
                 }
                 logoView.setFitWidth(80);
                 logoView.setFitHeight(80);
+                logoView.setPreserveRatio(true);
+                logoView.setStyle("-fx-cursor: hand;");
+
+// افکت hover
+                logoView.setOnMouseEntered(event -> {
+                    logoView.setScaleX(1.1);
+                    logoView.setScaleY(1.1);
+                });
+                logoView.setOnMouseExited(event -> {
+                    logoView.setScaleX(1.0);
+                    logoView.setScaleY(1.0);
+                });
+
+// کلیک روی عکس -> باز کردن صفحه منوی رستوران
+                logoView.setOnMouseClicked(event -> openVendorMenu(vendor));
+
+                Button nameButton = new Button(vendor.getName());
+                nameButton.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: #333; -fx-cursor: hand;");
+                nameButton.setPadding(new Insets(0)); // برای کم کردن padding دکمه که شبیه label بشه
+
+// ساخت انیمیشن بزرگ شدن
+                ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), nameButton);
+                scaleUp.setToX(1.2);
+                scaleUp.setToY(1.2);
+
+// ساخت انیمیشن برگشت به حالت اولیه
+                ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), nameButton);
+                scaleDown.setToX(1.0);
+                scaleDown.setToY(1.0);
+
+                nameButton.setOnMouseEntered(event -> {
+                    scaleDown.stop();
+                    scaleUp.playFromStart();
+                });
+
+                nameButton.setOnMouseExited(event -> {
+                    scaleUp.stop();
+                    scaleDown.playFromStart();
+                });
+
+// کلیک رو
+                // کلیک روی نام رستوران -> باز کردن صفحه منوی رستوران
+                nameButton.setOnMouseClicked(event -> openVendorMenu(vendor));
 
                 VBox infoBox = new VBox(5);
                 infoBox.getChildren().addAll(
                         styledLabel("ID: " + vendor.getId()),
-                        styledLabel("Name: " + vendor.getName()),
                         styledLabel("Address: " + vendor.getAddress()),
                         styledLabel("Phone: " + vendor.getPhone()),
                         styledLabel("Tax Fee: " + vendor.getTaxFee()),
                         styledLabel("Additional Fee: " + vendor.getAdditionalFee())
                 );
 
-                itemBox.getChildren().addAll(logoView, infoBox);
+                itemBox.getChildren().addAll(logoView,nameButton, infoBox);
                 vendorsListBox.getChildren().add(itemBox);
             }
         });
@@ -97,5 +144,29 @@ public class VendorsViewsController {
         Label label = new Label(text);
         label.setStyle("-fx-font-size: 14px;");
         return label;
+    }
+    private void openVendorMenu(Restaurant vendor) {
+        BuyerNetwork.getVendorMenus(vendor.getId(), fullVendor -> {
+            Platform.runLater(() -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorsMenuView.fxml"));
+                    Parent root = loader.load();
+
+                    VendorMenuController controller = loader.getController();
+                    controller.setVendor(fullVendor);  // حالا با منوها
+
+                    Stage stage = new Stage();
+                    stage.setTitle("منوی رستوران " + fullVendor.getName());
+                    stage.setScene(new Scene(root));
+                    stage.show();
+
+                    // بستن صفحه فعلی
+                    Stage currentStage = (Stage) vendorsListBox.getScene().getWindow();
+                    currentStage.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 }

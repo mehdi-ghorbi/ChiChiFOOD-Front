@@ -1,5 +1,8 @@
 package com.chichifood.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Restaurant {
 
     private int id;
@@ -10,6 +13,11 @@ public class Restaurant {
     private int taxFee;
     private int additionalFee;
     private boolean isRestaurantConfirmed;
+    private List<Menu> menus = new ArrayList<>();
+
+
+    public List<Menu> getMenus() { return menus; }
+    public void setMenus(List<Menu> menus) { this.menus = menus; }
 
     public Restaurant(int id, String name, String address, String phone, String logoBase64, int taxFee, int additionalFee) {
         this.id = id;

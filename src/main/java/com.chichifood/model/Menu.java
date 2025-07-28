@@ -4,6 +4,8 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.List;
+
 public class Menu {
 
     private LongProperty id = new SimpleLongProperty();
@@ -11,6 +13,12 @@ public class Menu {
     private ObjectProperty<Restaurant> restaurant = new SimpleObjectProperty<>();
     private ObservableList<Item> items = FXCollections.observableArrayList();
 
+    public Menu() {
+    }
+    public Menu(String title, List<Item> items) {
+        this.title.set(title);
+        this.items.setAll(items);
+    }
     // id property
     public long getId() {
         return id.get();
