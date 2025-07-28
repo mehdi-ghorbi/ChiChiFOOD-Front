@@ -5,6 +5,7 @@ import com.chichifood.network.NetworkService;
 import com.chichifood.network.SessionManager;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -90,30 +91,35 @@ public class SignupController {
         String role = ((RadioButton) roleButton.getSelectedToggle()).getText().toLowerCase();
 
         if (!validateForm()) {
-            showAlert("Validation Error", "Please fill all fields and select an image.");
+            Platform.runLater(() ->
+                    showAlert("Validation Error", "Please fill all fields and select an image.")
+            );
             return;
         }
+
         String imagePath = selectedImageFile.getAbsolutePath().replace("\\", "/");
 
-        User user = new User(fullName, phone, email, role, address, bankName, accountNumber,imagePath, password );
+        User user = new User(fullName, phone, email, role, address, bankName, accountNumber, imagePath, password);
 
         System.out.println("Sending signup request...");
         NetworkService.signup(user, imagePath, apiResponse -> {
-            System.out.println(apiResponse.getBody());
-            System.out.println("Received signup response...");
-            if (apiResponse.getStatusCode() == 200) {
-                System.out.println("kir Khar");
-                JsonObject jsonObject = JsonParser.parseString(apiResponse.getBody()).getAsJsonObject();
-                String token = jsonObject.get("token").getAsString();
-                SessionManager.setToken(token);
-               SessionManager.setRole(user.getRole());
-               openCorrectPanel(user.getRole());
-          //     showAlert("Success", "Registration successful!");
-            } else {
-                showAlert(String.valueOf(apiResponse.getStatusCode()), "Message:\n" + apiResponse.getBody());
-            }
+            Platform.runLater(() -> {
+                System.out.println("Received signup response...");
+                System.out.println(apiResponse.getBody());
+
+                if (apiResponse.getStatusCode() == 200) {
+                    JsonObject jsonObject = JsonParser.parseString(apiResponse.getBody()).getAsJsonObject();
+                    String token = jsonObject.get("token").getAsString();
+                    SessionManager.setToken(token);
+                    SessionManager.setRole(user.getRole());
+                    openCorrectPanel(user.getRole());
+                } else {
+                    showAlert(String.valueOf(apiResponse.getStatusCode()), "Message:\n" + apiResponse.getBody());
+                }
+            });
         });
     }
+
 
     private boolean validateForm() {
         return !isEmpty(FullNameTextFiled)
