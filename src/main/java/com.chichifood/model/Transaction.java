@@ -7,6 +7,16 @@ public class Transaction {
     private PaymentMethod method;
     private TransactionStatus status;
 
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+    }
+
+    private int money;
+
     public int getId() {
         return id;
     }
