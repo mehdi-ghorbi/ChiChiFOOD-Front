@@ -1,6 +1,10 @@
 package com.chichifood.controller;
 
+import com.chichifood.network.NetworkService;
 import com.chichifood.network.SessionManager;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -30,6 +34,26 @@ public class CourierPanelController {
 
     @FXML
     public void initialize() {
+        NetworkService.getProfile(apiResponse -> {
+            JsonObject json = JsonParser.parseString(apiResponse.getBody()).getAsJsonObject();
+            int isUserConfirmed = json.get("isUserConfirmed").getAsInt();
+            System.out.println(isUserConfirmed);
+            Platform.runLater(() -> {
+                if (isUserConfirmed != 1) {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/notConfirmedUsers.fxml"));
+                        Parent root = loader.load();
+                        Stage stage = (Stage) profileBtn.getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.setTitle("Not Confirmed Profile");
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        showAlert("خطا", "مشکل در بارگذاری صفحه پروفایل");
+                    }
+                }
+            });
+        });
         profileBtn.setOnAction(event -> openProfile());
         deliveyBtn.setOnAction(event -> startDelivery());
         historyBtn.setOnAction(event -> viewHistory());

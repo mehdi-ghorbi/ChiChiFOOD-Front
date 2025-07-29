@@ -54,6 +54,7 @@
                 <Button fx:id="editFoodBtn" text="ویرایش غذا" />
                 <Button fx:id="deleteFoodBtn" text="حذف غذا" />
                 <Button fx:id="addFoodBtn" text="افزودن غذا" />
+            <Button fx:id="serviceBtn" mnemonicParsing="false" text="هزینه سرویس" />
                 <Button fx:id="backBtn" text="برگشت" />
             </HBox>
         </VBox>

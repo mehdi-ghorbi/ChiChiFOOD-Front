@@ -2,6 +2,7 @@ package com.chichifood.controller;
 
 import com.chichifood.model.Item;
 import com.chichifood.model.Menu;
+import com.chichifood.model.Restaurant;
 import com.chichifood.network.ApiResponse;
 import com.chichifood.network.NetworkService;
 import com.chichifood.network.RestaurantNetwork;
@@ -63,6 +64,8 @@ public class RestaurantPanelController {
     private Button deleteMenuBtn;
     @FXML
     private Button addMenuBtn;
+    @FXML
+    private Button serviceBtn;
 
     // ----- غذا -----
     @FXML
@@ -86,21 +89,13 @@ public class RestaurantPanelController {
 
     @FXML
     public void initialize() {
-        // ستون نام منو
         menuNameColumn.setCellValueFactory(cell -> cell.getValue().titleProperty());
-        System.out.println("### initialize CALLED");
-
-        // داده تستی منو + غذا
         seedSampleData();
 
         menuTableView.setItems(menuData);
         foodsTableView.setItems(foodsData);
-
-        // ستون‌های جدول غذا
         foodNameColumn.setCellValueFactory(cell -> cell.getValue().nameProperty());
         priceColumn.setCellValueFactory(cell -> cell.getValue().priceProperty());
-
-        // ستون تصویر (Base64 -> ImageView)
         imageColumn.setCellFactory(col -> new TableCell<>() {
             private final ImageView imageView = new ImageView();
 
@@ -116,8 +111,7 @@ public class RestaurantPanelController {
                 if (empty || base64 == null || base64.isBlank()) {
                     setGraphic(null);
                 } else {
-                    // تغییر اصلی اینجاست:
-                    File file = new File(base64); // چون حالا base64 فقط اسم فیلده ولی محتواش مسیر فایل هست
+                    File file = new File(base64);
                     if (file.exists()) {
                         imageView.setImage(new Image(file.toURI().toString()));
                         setGraphic(imageView);
@@ -130,15 +124,11 @@ public class RestaurantPanelController {
 
         imageColumn.setCellValueFactory(cell -> cell.getValue().imageBase64Property());
 
-        // غیرفعال کردن دکمه‌ها وقتی چیزی انتخاب نشده
         showFoodsBtn.disableProperty().bind(menuTableView.getSelectionModel().selectedItemProperty().isNull());
         editMenuBtn.disableProperty().bind(menuTableView.getSelectionModel().selectedItemProperty().isNull());
         deleteMenuBtn.disableProperty().bind(menuTableView.getSelectionModel().selectedItemProperty().isNull());
-
         editFoodBtn.disableProperty().bind(foodsTableView.getSelectionModel().selectedItemProperty().isNull());
         deleteFoodBtn.disableProperty().bind(foodsTableView.getSelectionModel().selectedItemProperty().isNull());
-
-        // رویداد دکمه‌ها
         showFoodsBtn.setOnAction(e -> showFoodSelectorForMenu());
         //editMenuBtn.setOnAction(e -> editSelectedMenu());
         deleteMenuBtn.setOnAction(e -> deleteSelectedMenu());
@@ -147,9 +137,8 @@ public class RestaurantPanelController {
         editFoodBtn.setOnAction(e -> editSelectedFood());
         deleteFoodBtn.setOnAction(e -> deleteSelectedFood());
         backBtn.setOnAction(e -> gotoPreviousPage());
+        serviceBtn.setOnAction((e -> setRestautantService()));
     }
-
-    // ----- اکشن‌ها -----
 
     private void gotoPreviousPage() {
         try {
@@ -570,6 +559,84 @@ public class RestaurantPanelController {
         }
     }
 
+    private void setRestautantService() {
+        Dialog<Restaurant> dialog = new Dialog<>();
+        dialog.setTitle("تغییر دادن هزینه خدمات رستوران");
+        dialog.setHeaderText("لطفاً مقادیر زیر را وارد کنید:");
+
+        // دکمه‌ها
+        ButtonType applyButtonType = new ButtonType("اعمال", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(applyButtonType, ButtonType.CANCEL);
+
+        // فرم
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField serviceFeeField = new TextField();
+        serviceFeeField.setPromptText("هزینه سرویس");
+
+        TextField packagingFeeField = new TextField();
+        packagingFeeField.setPromptText("هزینه بسته‌بندی");
+
+        TextField taxField = new TextField();
+        taxField.setPromptText("مقدار مالیات");
+
+        ComboBox<String> taxTypeBox = new ComboBox<>();
+        taxTypeBox.getItems().addAll("FIXED", "PERCENTAGE");
+        taxTypeBox.setValue("FIXED");
+
+        grid.add(new Label("هزینه سرویس:"), 0, 0);
+        grid.add(serviceFeeField, 1, 0);
+
+        grid.add(new Label("هزینه بسته‌بندی:"), 0, 1);
+        grid.add(packagingFeeField, 1, 1);
+
+        grid.add(new Label("مقدار مالیات:"), 0, 2);
+        grid.add(taxField, 1, 2);
+
+        grid.add(new Label("نوع مالیات:"), 0, 3);
+        grid.add(taxTypeBox, 1, 3);
+
+        dialog.getDialogPane().setContent(grid);
+        Platform.runLater(serviceFeeField::requestFocus);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == applyButtonType) {
+                try {
+                    int serviceFee = Integer.parseInt(serviceFeeField.getText().trim());
+                    int packagingFee = Integer.parseInt(packagingFeeField.getText().trim());
+                    double tax = Double.parseDouble(taxField.getText().trim());
+                    String taxType = taxTypeBox.getValue();
+                    JsonObject json = new JsonObject();
+                    json.addProperty("additional_fee", packagingFee);
+                    json.addProperty("tax_fee", tax);
+                    json.addProperty("tax_type", taxType);
+                    json.addProperty("service_fee", serviceFee);
+                    RestaurantNetwork.updateRestaurant(json,resID,apiResponse -> {
+                        Platform.runLater(() -> {
+                           if (apiResponse.getStatusCode() == 200){
+                               showAlert(String.valueOf(apiResponse.getStatusCode()),  apiResponse.getBody());
+                           }else
+                                showAlert(String.valueOf(apiResponse.getStatusCode()),  apiResponse.getBody());
+                        });
+                    });
+
+
+                } catch (NumberFormatException e) {
+                    showAlert("خطا", "لطفاً مقادیر را به درستی وارد کنید.");
+                }
+            }
+            return null;
+        });
+
+        Optional<Restaurant> result = dialog.showAndWait();
+        result.ifPresent(restaurant -> {
+
+        });
+    }
+
 
     private void addFoodtoRestaurant() {
         Dialog<Item> dialog = new Dialog<>();
@@ -579,10 +646,9 @@ public class RestaurantPanelController {
         ButtonType addButtonType = new ButtonType("اضافه کردن", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
 
-        // فیلدهای ورودی
         TextField nameField = new TextField();
         TextField imageField = new TextField();
-        imageField.setEditable(false); // نذار دستی تغییر بده
+        imageField.setEditable(false);
 
         Button browseImageButton = new Button("انتخاب عکس");
         browseImageButton.setOnAction(e -> {
@@ -728,14 +794,12 @@ public class RestaurantPanelController {
                 Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
                 List<Map<String, Object>> menus = gson.fromJson(json, type);
 
-                menuData.clear(); // لیست observable مربوط به TableView
+                menuData.clear();
 
                 for (Map<String, Object> map : menus) {
                     Menu menu = new Menu();
                     menu.setId(Long.parseLong(map.get("id").toString()));
                     menu.setTitle(map.get("title").toString());
-
-                    // استخراج آیتم‌ها
                     List<Item> items = new ArrayList<>();
                     List<Map<String, Object>> itemMaps = (List<Map<String, Object>>) map.get("items");
                     if (itemMaps != null) {
@@ -786,7 +850,7 @@ public class RestaurantPanelController {
                         item.setImageBase64(map.get("image") != null ? map.get("image").toString() : "");
 
                         foodsData.add(item);
-                        allFoods.add(item); // همین‌جا ذخیره کن
+                        allFoods.add(item);
                     }
                 });
 

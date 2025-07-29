@@ -1,5 +1,6 @@
 package com.chichifood.controller;
 
+import com.chichifood.network.NetworkService;
 import com.chichifood.network.RestaurantNetwork;
 import com.chichifood.network.SessionManager;
 import com.google.gson.JsonArray;
@@ -30,6 +31,26 @@ public class SellerPanelController {
     private Button LogoutButton;
 
     public void initialize() {
+        NetworkService.getProfile(apiResponse -> {
+            JsonObject json = JsonParser.parseString(apiResponse.getBody()).getAsJsonObject();
+            int isUserConfirmed = json.get("isUserConfirmed").getAsInt();
+            System.out.println(isUserConfirmed);
+            Platform.runLater(() -> {
+                if (isUserConfirmed != 1) {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/notConfirmedUsers.fxml"));
+                        Parent root = loader.load();
+                        Stage stage = (Stage) profileButton.getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.setTitle("wait for confirmation");
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        showAlert("خطا", "مشکل در بارگذاری صفحه پروفایل");
+                    }
+                }
+            });
+        });
 
         profileButton.setOnAction(event -> {
             try {
@@ -145,7 +166,6 @@ public class SellerPanelController {
                             stage.setTitle("Restaurant Signup");
                         }else {
                             showAlert(String.valueOf(responseCode), body);
-
                         }
 
                         stage.show();

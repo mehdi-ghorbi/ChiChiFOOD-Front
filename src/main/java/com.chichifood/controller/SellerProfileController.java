@@ -38,6 +38,7 @@ public class SellerProfileController {
     @FXML private Button editBtn;
 
     public void initialize() {
+
         seedSampleData();
         backBtn.setOnAction(event -> {
             try {

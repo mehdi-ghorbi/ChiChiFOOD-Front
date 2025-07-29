@@ -47,8 +47,7 @@ public class LoginController {
                         String token = jsonObject.get("token").getAsString();
                         SessionManager.setToken(token);
                         SessionManager.setRole(jsonObject.get("role").getAsString());
-                      //  showAlert("Login Successful", "Welcome!");
-                       openCorrectPanel(SessionManager.getRole());
+                        openCorrectPanel(SessionManager.getRole());
                     } else {
                         showAlert(String.valueOf(statusCode),  "Message:\n" + body);
                     }
