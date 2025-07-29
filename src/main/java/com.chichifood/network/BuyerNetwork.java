@@ -18,6 +18,161 @@ import java.net.http.*;
 import java.util.function.Consumer;
 
 public class BuyerNetwork {
+    public static void getAllUserOrders(int userId, Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        String url = "http://localhost:8569/orders/getalluserorders/" + userId;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .GET()
+                .build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+                    callback.accept(new ApiResponse(statusCode, body));
+                })
+                .exceptionally(e -> {
+                    callback.accept(new ApiResponse(500, "Request failed: " + e.getMessage()));
+                    return null;
+                });
+    }
+
+    public static void submitOrder(String deliveryAddress, int vendorId, Integer couponId, List<ItemRequest> items, Consumer<ApiResponse> consumer) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            consumer.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+
+        JsonObject jsonRequest = new JsonObject();
+        jsonRequest.addProperty("delivery_address", deliveryAddress);
+        jsonRequest.addProperty("vendor_id", vendorId);
+        if (couponId != null) {
+            jsonRequest.addProperty("coupon_id", couponId);
+        }
+
+        JsonArray itemsArray = new JsonArray();
+        for (ItemRequest item : items) {
+            JsonObject itemJson = new JsonObject();
+            itemJson.addProperty("item_id", item.itemId());
+            itemJson.addProperty("quantity", item.quantity());
+            itemsArray.add(itemJson);
+        }
+        jsonRequest.add("items", itemsArray);
+
+        String json = new Gson().toJson(jsonRequest);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8569/orders"))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> consumer.accept(new ApiResponse(response.statusCode(), response.body())))
+                .exceptionally(e -> {
+                    consumer.accept(new ApiResponse(500, "Server Error: " + e.getMessage()));
+                    return null;
+                });
+    }
+
+    public static void getOrder(int orderId, Consumer<ApiResponse> consumer) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            consumer.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8569/orders/" + orderId))
+                .header("Authorization", "Bearer " + token)
+                .GET()
+                .build();
+
+        HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> consumer.accept(new ApiResponse(response.statusCode(), response.body())))
+                .exceptionally(e -> {
+                    consumer.accept(new ApiResponse(500, "Server Error: " + e.getMessage()));
+                    return null;
+                });
+    }
+
+    public static void serachOrders(String itemName, String vendorName, Consumer<ApiResponse> consumer) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            consumer.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+
+        StringBuilder uriBuilder = new StringBuilder("http://localhost:8569/orders/history?");
+        if (itemName != null && !itemName.isEmpty()) {
+            uriBuilder.append("search=").append(itemName).append("&");
+        }
+        if (vendorName != null && !vendorName.isEmpty()) {
+            uriBuilder.append("vendor=").append(vendorName);
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uriBuilder.toString()))
+                .header("Authorization", "Bearer " + token)
+                .GET()
+                .build();
+
+        HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> consumer.accept(new ApiResponse(response.statusCode(), response.body())))
+                .exceptionally(e -> {
+                    consumer.accept(new ApiResponse(500, "Server Error: " + e.getMessage()));
+                    return null;
+                });
+    }
+
+    // کلاس کمکی برای ساختن JSON آیتم‌ها
+    public record ItemRequest(int itemId, int quantity) {}
+
+    public static void getVendorsList(String vendorName, List<String> keywords, Consumer<ApiResponse> callback) {
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+
+        HttpClient client = HttpClient.newHttpClient();
+        JsonObject jsonRequest = new JsonObject();
+        jsonRequest.addProperty("search", vendorName);
+
+        JsonArray keywordsArray = new JsonArray();
+        for (String keyword : keywords) {
+            keywordsArray.add(keyword);
+        }
+        jsonRequest.add("keywords", keywordsArray);
+        String json = new Gson().toJson(jsonRequest);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8569/vendors"))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> {
+                    int statusCode = response.statusCode();
+                    String body = response.body();
+                    ApiResponse apiResponse = new ApiResponse(statusCode, body);
+                    callback.accept(apiResponse);
+                })
+                .exceptionally(e -> {
+                    ApiResponse apiResponse = new ApiResponse(500, "Server Error: " + e.getMessage());
+                    callback.accept(apiResponse);
+                    return null;
+                });
+    }
 
     public static void getVendorMenus(int vendorId, Consumer<Restaurant> consumer) {
         String token = SessionManager.getToken();
@@ -108,46 +263,6 @@ public class BuyerNetwork {
                 });
     }
 
-    public static void getVendorsList(String vendorName, List<String> keywords, Consumer<ApiResponse> callback) {
-        String token = SessionManager.getToken();
-        if (token == null || token.isEmpty()) {
-            callback.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
-            return;
-        }
-
-        HttpClient client = HttpClient.newHttpClient();
-        JsonObject jsonRequest = new JsonObject();
-        jsonRequest.addProperty("search", vendorName);
-
-        JsonArray keywordsArray = new JsonArray();
-        for (String keyword : keywords) {
-            keywordsArray.add(keyword);
-        }
-        jsonRequest.add("keywords", keywordsArray);
-        String json = new Gson().toJson(jsonRequest);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8569/vendors"))
-                .header("Authorization", "Bearer " + token)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> {
-                    int statusCode = response.statusCode();
-                    String body = response.body();
-                    ApiResponse apiResponse = new ApiResponse(statusCode, body);
-                    callback.accept(apiResponse);
-                })
-                .exceptionally(e -> {
-                    ApiResponse apiResponse = new ApiResponse(500, "Server Error: " + e.getMessage());
-                    callback.accept(apiResponse);
-                    return null;
-                });
-    }
-
-
     public static void getItemsList(String itemName, int itemPrice, List<String> keywords, Consumer<ApiResponse> callback) {
         String token = SessionManager.getToken();
         if (token == null || token.isEmpty()) {
@@ -188,6 +303,7 @@ public class BuyerNetwork {
                     return null;
                 });
     }
+
     public static void addFavoritesRestaurants(int id, Consumer<ApiResponse> callback){
         String token = SessionManager.getToken();
         if (token == null || token.isEmpty()) {
@@ -214,6 +330,7 @@ public class BuyerNetwork {
                 });
 
     }
+
     public static void removeFavoritesRestaurants(int id, Consumer<ApiResponse> callback) {
         String token = SessionManager.getToken();
         if (token == null || token.isEmpty()) {
@@ -241,6 +358,7 @@ public class BuyerNetwork {
                     return null;
                 });
     }
+
     public static void getFavoritesRestaurants(Consumer<ApiResponse> callback) {
         String token = SessionManager.getToken();
         if (token == null || token.isEmpty()) {

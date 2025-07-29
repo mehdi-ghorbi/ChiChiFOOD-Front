@@ -1,5 +1,6 @@
 package com.chichifood.controller;
 
+import com.chichifood.localdata.CartManager;
 import com.chichifood.model.Item;
 import com.chichifood.model.Menu;
 import com.chichifood.model.Restaurant;
@@ -217,6 +218,7 @@ public class VendorMenuController {
                     countLabel.setText(String.valueOf(count));
                     countLabel.setVisible(true);
                     minusBtn.setVisible(true);
+                    CartManager.addItemToCart(item);
                 });
 
                 minusBtn.setOnAction(ev -> {
@@ -229,6 +231,7 @@ public class VendorMenuController {
                     } else {
                         countLabel.setText(String.valueOf(count));
                     }
+                    CartManager.decreaseItemQuantity(item);
                 });
 
                 controls.getChildren().addAll(plusBtn, countLabel, minusBtn);
