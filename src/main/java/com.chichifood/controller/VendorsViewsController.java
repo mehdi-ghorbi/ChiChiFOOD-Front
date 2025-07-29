@@ -153,14 +153,13 @@ public class VendorsViewsController {
                     Parent root = loader.load();
 
                     VendorMenuController controller = loader.getController();
-                    controller.setVendor(fullVendor);  // حالا با منوها
+                    controller.setVendor(fullVendor);
 
                     Stage stage = new Stage();
                     stage.setTitle("منوی رستوران " + fullVendor.getName());
                     stage.setScene(new Scene(root));
                     stage.show();
 
-                    // بستن صفحه فعلی
                     Stage currentStage = (Stage) vendorsListBox.getScene().getWindow();
                     currentStage.close();
                 } catch (IOException e) {

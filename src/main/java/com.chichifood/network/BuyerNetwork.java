@@ -18,6 +18,9 @@ import java.net.http.*;
 import java.util.function.Consumer;
 
 public class BuyerNetwork {
+    public static void getTransactions(Consumer<ApiResponse> callback) {
+
+    }
     public static void getAllUserOrders(int userId, Consumer<ApiResponse> callback) {
         String token = SessionManager.getToken();
         if (token == null || token.isEmpty()) {
@@ -25,7 +28,7 @@ public class BuyerNetwork {
             return;
         }
         HttpClient client = HttpClient.newHttpClient();
-        String url = "http://localhost:8569/orders/getalluserorders/" + userId;
+        String url = "http://localhost:8569/orders/getalluserorders/";
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Authorization", "Bearer " + token)

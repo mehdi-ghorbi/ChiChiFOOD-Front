@@ -8,11 +8,13 @@ import com.sun.javafx.scene.control.InputField;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -97,19 +99,68 @@ public class FavoritesListController {
             imageView.setScaleY(1.0);
         });
 
-        // کلیک روی عکس برای رفتن به صفحه رستوران
         imageView.setOnMouseClicked(e -> {
             System.out.println("کلیک شد روی رستوران: " + restaurant.getName());
-            // TODO: باز کردن پنجره اطلاعات رستوران
+            BuyerNetwork.getVendorMenus(restaurant.getId(), fullVendor -> {
+                Platform.runLater(() -> {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorsMenuView.fxml"));
+                        Parent root = loader.load();
+
+                        VendorMenuController controller = loader.getController();
+                        controller.setVendor(fullVendor);
+
+                        Stage stage = new Stage();
+                        stage.setTitle("منوی رستوران " + fullVendor.getName());
+                        stage.setScene(new Scene(root));
+                        stage.show();
+
+                        Stage currentStage = (Stage) imageView.getScene().getWindow();
+                        currentStage.close();
+                    } catch (IOException ee) {
+                        ee.printStackTrace();
+                    }
+                });
+            });
         });
 
         // اطلاعات متنی
         VBox infoBox = new VBox(5);
-        Text name = new Text("نام: " + restaurant.getName());
+        Label vendorLabel = new Label("رستوران: " + restaurant.getName());
+        vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 13px;");
+        vendorLabel.setCursor(Cursor.HAND);
+        vendorLabel.setOnMouseEntered(e -> vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 15px; -fx-font-weight: bold;"));
+        vendorLabel.setOnMouseExited(e -> vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 13px;"));
+        vendorLabel.setOnMouseClicked(e -> {
+            System.out.println("باز کردن صفحه رستوران " + restaurant.getName());
+            BuyerNetwork.getVendorMenus(restaurant.getId(), fullVendor -> {
+                Platform.runLater(() -> {
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorsMenuView.fxml"));
+                        Parent root = loader.load();
+
+                        VendorMenuController controller = loader.getController();
+                        controller.setVendor(fullVendor);  // حالا با منوها
+
+                        Stage stage = new Stage();
+                        stage.setTitle("منوی رستوران " + fullVendor.getName());
+                        stage.setScene(new Scene(root));
+                        stage.show();
+
+                        // بستن صفحه فعلی
+                        Stage currentStage = (Stage) vendorLabel.getScene().getWindow();
+                        currentStage.close();
+                    } catch (IOException ee) {
+                        ee.printStackTrace();
+                    }
+                });
+            });
+        });
+
         Text address = new Text("آدرس: " + restaurant.getAddress());
         Text taxFee = new Text(restaurant.getTaxFee() == 0 ? "" : "مالیات: " + restaurant.getTaxFee());
         Text addFee = new Text(restaurant.getAdditionalFee() == 0 ? "" : "هزینه اضافی: " + restaurant.getAdditionalFee());
-        infoBox.getChildren().addAll(name, address, taxFee, addFee);
+        infoBox.getChildren().addAll(vendorLabel, address, taxFee, addFee);
 
         // حذف از علاقه‌مندی
         Text deleteText = new Text("❌");

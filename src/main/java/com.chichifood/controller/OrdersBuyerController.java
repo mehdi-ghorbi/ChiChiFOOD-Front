@@ -13,9 +13,12 @@ import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -134,34 +137,104 @@ public class OrdersBuyerController {
         showActiveOrders();
         showPastOrders();
     }
-
     private void showPendingOrders() {
+        Map<Integer, List<CartItem>> carts = CartManager.getAllCarts();
         pendingOrdersContainer.getChildren().clear();
 
-        Map<Integer, List<CartItem>> allCarts = CartManager.getAllCarts();
-        for (Map.Entry<Integer, List<CartItem>> entry : allCarts.entrySet()) {
+        if (carts.isEmpty()) {
+            Label emptyLabel = new Label("سبد خرید شما خالی است.");
+            pendingOrdersContainer.getChildren().add(emptyLabel);
+            return;
+        }
+
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(20); // فاصله افقی بین سبدها
+        flowPane.setVgap(20); // فاصله عمودی
+        flowPane.setPrefWrapLength(800); // عرض کل سطر قبل از رفتن به خط بعد (بسته به عرض صفحه تنظیم کن)
+
+        for (Map.Entry<Integer, List<CartItem>> entry : carts.entrySet()) {
             int vendorId = entry.getKey();
             List<CartItem> cartItems = entry.getValue();
 
-            // عنوان رستوران (یا vendor ID)
-            Label vendorLabel = new Label("رستوران شماره " + vendorId + ":");
-            vendorLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
-            pendingOrdersContainer.getChildren().add(vendorLabel);
+            VBox cartBox = new VBox(5);
+            cartBox.setPrefWidth(200); // عرض هر سبد
+            cartBox.setStyle("-fx-border-color: gray; -fx-border-width: 1; -fx-padding: 10; -fx-background-color: #fefefe; -fx-background-radius: 6;");
 
-            // لیست آیتم‌ها
+            Label vendorLabel = new Label("رستوران ID: " + vendorId);
+            vendorLabel.setStyle("-fx-font-weight: bold;");
+            cartBox.getChildren().add(vendorLabel);
+
             for (CartItem ci : cartItems) {
-                String itemText = ci.getItem().getName() + " × " + ci.getQuantity();
-                Label itemLabel = new Label(itemText);
-                itemLabel.setStyle("-fx-padding: 0 0 0 10px;"); // کمی تورفتگی برای خوانایی
-                pendingOrdersContainer.getChildren().add(itemLabel);
+                String text = ci.getItem().getName() + " × " + ci.getQuantity();
+                Label itemLabel = new Label(text);
+                cartBox.getChildren().add(itemLabel);
             }
-            int price = CartManager.calculateTotalPrice(vendorId);
-            Label priceLabel = new Label(price + "قیمت کل: ");
-            pendingOrdersContainer.getChildren().add(priceLabel);
-            // فاصله بین رستوران‌ها
-            pendingOrdersContainer.getChildren().add(new Label(""));
+
+            TextField couponIdField = new TextField();
+            couponIdField.setPromptText("آیدی کوپن");
+            couponIdField.setMaxWidth(180); // محدود کردن عرض
+            cartBox.getChildren().add(couponIdField);
+
+            TextField addressField = new TextField();
+            addressField.setPromptText("آدرس تحویل");
+            addressField.setMaxWidth(180); // محدود کردن عرض
+            cartBox.getChildren().add(addressField);
+
+            Button submitButton = new Button("ثبت سفارش");
+            submitButton.setMaxWidth(180);
+            cartBox.getChildren().add(submitButton);
+
+            submitButton.setOnAction(event -> {
+                String address = addressField.getText().trim();
+                String couponIdText = couponIdField.getText().trim();
+                if (address.isEmpty()) {
+                    showAlert("خطا", "لطفاً آدرس تحویل را وارد کنید.");
+                    return;
+                }
+
+                int couponId = couponIdText.isEmpty() ? -1 : Integer.parseInt(couponIdText);
+
+                List<BuyerNetwork.ItemRequest> itemRequests = cartItems.stream()
+                        .map(ci -> new BuyerNetwork.ItemRequest(ci.getItem().getId(), ci.getQuantity()))
+                        .toList();
+
+                BuyerNetwork.submitOrder(address, vendorId, couponId, itemRequests, response -> {
+                    Platform.runLater(() -> {
+                        if (response.getStatusCode() == 200 || response.getStatusCode() == 201) {
+                            showAlert("موفقیت", "سفارش با موفقیت ثبت شد.");
+                            CartManager.clearCart(vendorId);
+                            showPendingOrders(); // رفرش سبدها
+                        } else {
+                            showAlert("خطا", "ثبت سفارش ناموفق بود: " + response.getBody());
+                        }
+                    });
+                });
+                Stage currentStage = (Stage) submitButton.getScene().getWindow();
+                currentStage.close();
+
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Payment.fxml"));
+                    Parent root = loader.load();
+
+                    Stage stage = new Stage();
+                    stage.setScene(new Scene(root));
+                    stage.setTitle("پرداخت");
+                    stage.show();
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+            });
+
+            flowPane.getChildren().add(cartBox);
         }
+
+        pendingOrdersContainer.getChildren().add(flowPane);
     }
+
+
+
 
     private void showOrder(int orderId) {
         BuyerNetwork.getOrder(orderId, response -> {
@@ -186,36 +259,112 @@ public class OrdersBuyerController {
         BuyerNetwork.getAllUserOrders(userId, response -> {
             if (response.getStatusCode() == 200) {
                 Platform.runLater(() -> {
-                    pastOrdersContainer.getChildren().clear();
+                    activeOrdersContainer.getChildren().clear();
 
                     JsonArray orders = JsonParser.parseString(response.getBody()).getAsJsonArray();
+
+                    FlowPane flowPane = new FlowPane();
+                    flowPane.setHgap(15);
+                    flowPane.setVgap(15);
+                    flowPane.setPrefWidth(750);
 
                     for (JsonElement elem : orders) {
                         JsonObject order = elem.getAsJsonObject();
 
                         String status = order.get("status").getAsString();
-                        if ((status.equals("completed") || status.equals("cancelled") || status.equals("unpaid and cancelled"))) continue; // فقط سفارش‌های تحویل‌داده‌شده
+                        if ((status.equals("COMPLETED") || status.equals("CANCELLED")
+                                || status.equals("UNPAID_AND_CANCELLED") || status.equals("SUBMITTED"))) continue;
 
                         int orderId = order.get("id").getAsInt();
                         String vendorName = order.get("vendorName").getAsString();
-                        int totalPrice = order.get("totalPrice").getAsInt();
+                        int payPrice = order.get("payPrice").getAsInt();
 
-                        Label label = new Label("سفارش #" + orderId +
-                                " | رستوران: " + vendorName +
-                                " | مبلغ: " + totalPrice + " تومان");
+                        VBox card = new VBox(5);
+                        card.setPadding(new Insets(10));
+                        card.setStyle("-fx-background-color: #FFF3E0; -fx-border-color: #FB8C00; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;");
+                        card.setPrefWidth(220);
 
-                        pastOrdersContainer.getChildren().add(label);
+                        Label title = new Label("سفارش #" + orderId);
+                        title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+                        title.setCursor(Cursor.HAND);
+                        title.setOnMouseEntered(e -> title.setStyle(" -fx-font-size: 16px; -fx-font-weight: bold;"));
+                        title.setOnMouseExited(e -> title.setStyle(" -fx-font-size: 14px;"));
+                        title.setOnMouseClicked(e -> {
+                            BuyerNetwork.getOrder(orderId, apiResponse -> {
+                                Platform.runLater(() -> {
+                                    try {
+                                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/OneOrderView.fxml"));
+                                        Parent root = loader.load();
+
+                                        OneOrderController controller = loader.getController();
+                                        controller.setOrderId(orderId);
+
+                                        Stage stage = new Stage();
+                                        stage.setTitle("سفارش شماره: " + orderId);
+                                        stage.setScene(new Scene(root));
+                                        stage.show();
+
+                                        Stage currentStage = (Stage) title.getScene().getWindow();
+                                        currentStage.close();
+
+                                    } catch (IOException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                });
+                            });
+                        });
+
+
+                        Label vendorLabel = new Label("رستوران: " + vendorName);
+                        vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 13px;");
+                        vendorLabel.setCursor(Cursor.HAND);
+                        vendorLabel.setOnMouseEntered(e -> vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 15px; -fx-font-weight: bold;"));
+                        vendorLabel.setOnMouseExited(e -> vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 13px;"));
+
+
+                        vendorLabel.setOnMouseClicked(e -> {
+                            System.out.println("باز کردن صفحه رستوران " + vendorName);
+                            BuyerNetwork.getVendorMenus(Integer.parseInt(order.get("vendorID").toString()), fullVendor -> {
+                                Platform.runLater(() -> {
+                                    try {
+                                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorsMenuView.fxml"));
+                                        Parent root = loader.load();
+
+                                        VendorMenuController controller = loader.getController();
+                                        controller.setVendor(fullVendor);  // حالا با منوها
+
+                                        Stage stage = new Stage();
+                                        stage.setTitle("منوی رستوران " + fullVendor.getName());
+                                        stage.setScene(new Scene(root));
+                                        stage.show();
+
+                                        // بستن صفحه فعلی
+                                        Stage currentStage = (Stage) vendorLabel.getScene().getWindow();
+                                        currentStage.close();
+                                    } catch (IOException ee) {
+                                        ee.printStackTrace();
+                                    }
+                                });
+                            });
+                        });
+
+                        Label priceLabel = new Label("مبلغ: " + payPrice + " تومان");
+
+                        card.getChildren().addAll(title, vendorLabel, priceLabel);
+                        flowPane.getChildren().add(card);
                     }
 
-                    if (pastOrdersContainer.getChildren().isEmpty()) {
-                        pastOrdersContainer.getChildren().add(new Label("هیچ سفارش فعالی وجود ندارد."));
+                    if (flowPane.getChildren().isEmpty()) {
+                        activeOrdersContainer.getChildren().add(new Label("هیچ سفارش فعالی وجود ندارد."));
+                    } else {
+                        activeOrdersContainer.getChildren().add(flowPane);
                     }
                 });
             } else {
                 Platform.runLater(() -> {
-                    pastOrdersContainer.getChildren().clear();
+                    activeOrdersContainer.getChildren().clear();
                     Label label = new Label("خطا در دریافت سفارش‌های فعال: " + response.getBody());
-                    pastOrdersContainer.getChildren().add(label);
+                    activeOrdersContainer.getChildren().add(label);
                 });
             }
         });
@@ -229,19 +378,174 @@ public class OrdersBuyerController {
 
                     JsonArray orders = JsonParser.parseString(response.getBody()).getAsJsonArray();
 
+                    FlowPane flowPane = new FlowPane();
+                    flowPane.setHgap(15);
+                    flowPane.setVgap(15);
+                    flowPane.setPrefWidth(750);
+
                     for (JsonElement elem : orders) {
                         JsonObject order = elem.getAsJsonObject();
 
                         String status = order.get("status").getAsString();
-                        if (!(status.equals("completed") || status.equals("cancelled") || status.equals("unpaid and cancelled"))) continue; // فقط سفارش‌های تحویل‌داده‌شده
+                        if (!(status.equals("COMPLETED") || status.equals("CANCELLED")
+                                || status.equals("UNPAID_AND_CANCELLED"))) continue;
 
                         int orderId = order.get("id").getAsInt();
                         String vendorName = order.get("vendorName").getAsString();
-                        int totalPrice = order.get("totalPrice").getAsInt();
+                        int payPrice = order.get("payPrice").getAsInt();
+
+                        VBox card = new VBox(5);
+                        card.setPadding(new Insets(10));
+                        card.setStyle("-fx-background-color: #FFF3E0; -fx-border-color: #FB8C00; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;");
+                        card.setPrefWidth(220);
+
+                        Label title = new Label("سفارش #" + orderId);
+                        title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+                        title.setCursor(Cursor.HAND);
+                        title.setOnMouseEntered(e -> title.setStyle(" -fx-font-size: 16px; -fx-font-weight: bold;"));
+                        title.setOnMouseExited(e -> title.setStyle(" -fx-font-size: 14px;"));
+                        title.setOnMouseClicked(e -> {
+                            BuyerNetwork.getOrder(orderId, apiResponse -> {
+                                Platform.runLater(() -> {
+                                    try {
+                                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/OneOrderView.fxml"));
+                                        Parent root = loader.load();
+
+                                        OneOrderController controller = loader.getController();
+                                        controller.setOrderId(orderId);
+
+                                        Stage stage = new Stage();
+                                        stage.setTitle("سفارش شماره: " + orderId);
+                                        stage.setScene(new Scene(root));
+                                        stage.show();
+
+                                        Stage currentStage = (Stage) title.getScene().getWindow();
+                                        currentStage.close();
+
+                                    } catch (IOException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                });
+                            });
+                        });
+
+                        Label vendorLabel = new Label("رستوران: " + vendorName);
+                        vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 13px;");
+                        vendorLabel.setCursor(Cursor.HAND);
+                        vendorLabel.setOnMouseEntered(e -> vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 15px; -fx-font-weight: bold;"));
+                        vendorLabel.setOnMouseExited(e -> vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 13px;"));
+
+                        vendorLabel.setOnMouseClicked(e -> {
+                            System.out.println("باز کردن صفحه رستوران " + vendorName);
+                            BuyerNetwork.getVendorMenus(Integer.parseInt(order.get("vendorID").toString()), fullVendor -> {
+                                Platform.runLater(() -> {
+                                    try {
+                                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorsMenuView.fxml"));
+                                        Parent root = loader.load();
+
+                                        VendorMenuController controller = loader.getController();
+                                        controller.setVendor(fullVendor);  // حالا با منوها
+
+                                        Stage stage = new Stage();
+                                        stage.setTitle("منوی رستوران " + fullVendor.getName());
+                                        stage.setScene(new Scene(root));
+                                        stage.show();
+
+                                        // بستن صفحه فعلی
+                                        Stage currentStage = (Stage) vendorLabel.getScene().getWindow();
+                                        currentStage.close();
+                                    } catch (IOException ee) {
+                                        ee.printStackTrace();
+                                    }
+                                });
+                            });
+                        });
+
+                        Label priceLabel = new Label("مبلغ: " + payPrice + " تومان");
+
+                        card.getChildren().addAll(title, vendorLabel, priceLabel);
+                        flowPane.getChildren().add(card);
+                    }
+
+                    if (flowPane.getChildren().isEmpty()) {
+                        pastOrdersContainer.getChildren().add(new Label("هیچ سفارش تحویل‌داده‌شده‌ای وجود ندارد."));
+                    } else {
+                        pastOrdersContainer.getChildren().add(flowPane);
+                    }
+                });
+            } else {
+                Platform.runLater(() -> {
+                    pastOrdersContainer.getChildren().clear();
+                    Label label = new Label("خطا در دریافت سفارش‌های گذشته: " + response.getBody());
+                    pastOrdersContainer.getChildren().add(label);
+                });
+            }
+        });
+    }
+
+    private void showAhctiveOrders() {
+        int userId = buyerId();
+        BuyerNetwork.getAllUserOrders(userId, response -> {
+            if (response.getStatusCode() == 200) {
+                Platform.runLater(() -> {
+                    activeOrdersContainer.getChildren().clear();
+
+                    JsonArray orders = JsonParser.parseString(response.getBody()).getAsJsonArray();
+
+                    for (JsonElement elem : orders) {
+                        JsonObject order = elem.getAsJsonObject();
+
+                        String status = order.get("status").getAsString();
+                        if ((status.equals("COMPLETED") || status.equals("CANCELLED") || status.equals("UNPAID_AND_CANCELLED") || status.equals("SUBMITTED"))) continue; // فقط سفارش‌های تحویل‌داده‌شده
+
+                        int orderId = order.get("id").getAsInt();
+                        String vendorName = order.get("vendorName").getAsString();
+                        int payPrice = order.get("payPrice").getAsInt();
 
                         Label label = new Label("سفارش #" + orderId +
                                 " | رستوران: " + vendorName +
-                                " | مبلغ: " + totalPrice + " تومان");
+                                " | مبلغ: " + payPrice + " تومان");
+
+                        activeOrdersContainer.getChildren().add(label);
+                    }
+
+                    if (activeOrdersContainer.getChildren().isEmpty()) {
+                        activeOrdersContainer.getChildren().add(new Label("هیچ سفارش فعالی وجود ندارد."));
+                    }
+                });
+            } else {
+                Platform.runLater(() -> {
+                    activeOrdersContainer.getChildren().clear();
+                    Label label = new Label("خطا در دریافت سفارش‌های فعال: " + response.getBody());
+                    activeOrdersContainer.getChildren().add(label);
+                });
+            }
+        });
+    }
+
+    private void showPafstOrders() {
+        int userId = buyerId();
+        BuyerNetwork.getAllUserOrders(userId, response -> {
+            if (response.getStatusCode() == 200) {
+                Platform.runLater(() -> {
+                    pastOrdersContainer.getChildren().clear();
+
+                    JsonArray orders = JsonParser.parseString(response.getBody()).getAsJsonArray();
+
+                    for (JsonElement elem : orders) {
+                        JsonObject order = elem.getAsJsonObject();
+
+                        String status = order.get("status").getAsString();
+                        System.out.println(status);
+
+                        if (!(status.equals("COMPLETED") || status.equals("CANCELLED") || status.equals("UNPAID_AND_CANCELLED"))) continue;
+                        int orderId = order.get("id").getAsInt();
+                        String vendorName = order.get("vendorName").getAsString();
+                        int payPrice = order.get("payPrice").getAsInt();
+
+                        Label label = new Label("سفارش #" + orderId +
+                                " | رستوران: " + vendorName +
+                                " | مبلغ: " + payPrice + " تومان");
 
                         pastOrdersContainer.getChildren().add(label);
                     }
