@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.chichifood.controller.WalletController"
+            prefWidth="800" prefHeight="600"
+            style="-fx-background-color: white;">
+
+    <!-- Top buttons -->
+    <top>
+        <HBox spacing="10" padding="10" alignment="CENTER_LEFT">
+            <Button fx:id="backButton" text="⬅ بازگشت"
+                    style="-fx-background-color: orange; -fx-text-fill: white;" />
+            <Button fx:id="homeButton" text="🏠 خانه"
+                    style="-fx-background-color: orange; -fx-text-fill: white;" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" alignment="TOP_CENTER" padding="40">
+            <Label text="موجودی کیف پول:"
+                   style="-fx-font-size: 18px; -fx-text-fill: orange;" />
+            <Label fx:id="walletBalanceLabel"
+                   text="--- تومان"
+                   style="-fx-font-size: 24px; -fx-text-fill: black;" />
+
+            <TextField fx:id="amountField"
+                       promptText="مبلغ مورد نظر را وارد کنید"
+                       maxWidth="200"
+                       style="-fx-border-color: orange; -fx-border-radius: 5;" />
+
+            <Button fx:id="topUpButton"
+                    text="افزایش موجودی"
+                    style="-fx-background-color: orange; -fx-text-fill: white;" />
+
+            <Button fx:id="transactionsButton"
+                    text="تراکنش‌ها"
+                    style="-fx-background-color: #f0f0f0; -fx-text-fill: orange;" />
+        </VBox>
+    </center>
+
+</BorderPane>

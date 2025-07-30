@@ -18,14 +18,39 @@ import java.net.http.*;
 import java.util.function.Consumer;
 
 public class BuyerNetwork {
-    public static void updateOrder(int orderId, Consumer<ApiResponse> consumer){
+    public static void walletTopUp(int amount, Consumer<ApiResponse> consumer) {
         String token = SessionManager.getToken();
         if (token == null || token.isEmpty()) {
             consumer.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
             return;
         }
         JsonObject jsonRequest = new JsonObject();
-        jsonRequest.addProperty("status", orderId);
+        jsonRequest.addProperty("amount", amount);
+        System.out.println(jsonRequest);
+        String json = new Gson().toJson(jsonRequest);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8569/payment/online"))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpClient.newHttpClient().sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(response -> consumer.accept(new ApiResponse(response.statusCode(), response.body())))
+                .exceptionally(e -> {
+                    consumer.accept(new ApiResponse(500, "Server Error: " + e.getMessage()));
+                    return null;
+                });
+    }
+    public static void updateOrder(int orderId, String method, Consumer<ApiResponse> consumer){
+        String token = SessionManager.getToken();
+        if (token == null || token.isEmpty()) {
+            consumer.accept(new ApiResponse(401, "Unauthorized: Token is missing"));
+            return;
+        }
+        JsonObject jsonRequest = new JsonObject();
+        jsonRequest.addProperty("status", method);
+
 
         System.out.println(jsonRequest);
         String json = new Gson().toJson(jsonRequest);

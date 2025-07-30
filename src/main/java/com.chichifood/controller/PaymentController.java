@@ -53,9 +53,24 @@ public class PaymentController {
             BuyerNetwork.pay(orderId, "ONLINE", response -> {
                 System.out.println("ONLINE payment response: " + response.getStatusCode() + " - " + response.getBody());
 
-                Platform.runLater(() -> goHome());
+                if (response.getStatusCode() == 200) {
+                    BuyerNetwork.updateOrder(orderId, "WAITING_VENDOR", updateResponse -> {
+                        System.out.println("Update order response: " + updateResponse.getStatusCode() + " - " + updateResponse.getBody());
+
+                        Platform.runLater(() -> {
+                            if (updateResponse.getStatusCode() == 200) {
+                                goHome();
+                            } else {
+                                showAlert( "خطا در بروزرسانی وضعیت سفارش: " + updateResponse.getBody());
+                            }
+                        });
+                    });
+                } else {
+                    Platform.runLater(() -> showAlert( "پرداخت آنلاین ناموفق بود: " + response.getBody()));
+                }
             });
         });
+
 
         walletPaymentButton.setOnAction(e -> {
             if (walletBalance < totalPrice) {
@@ -64,28 +79,64 @@ public class PaymentController {
                 BuyerNetwork.pay(orderId, "WALLET", response -> {
                     System.out.println("WALLET payment response: " + response.getStatusCode() + " - " + response.getBody());
 
-                    Platform.runLater(() -> goHome());
+                    if (response.getStatusCode() == 200) {
+                        BuyerNetwork.updateOrder(orderId, "WAITING_VENDOR", updateResponse -> {
+                            System.out.println("Update order response: " + updateResponse.getStatusCode() + " - " + updateResponse.getBody());
+
+                            Platform.runLater(() -> {
+                                if (updateResponse.getStatusCode() == 200) {
+                                    goHome();
+                                } else {
+                                    showAlert( "خطا در بروزرسانی وضعیت سفارش: " + updateResponse.getBody());
+                                }
+                            });
+                        });
+                    } else {
+                        Platform.runLater(() -> {
+                            showAlert( "پرداخت با کیف پول ناموفق بود: " + response.getBody());
+                        });
+                    }
                 });
             }
         });
 
-        homeButton.setOnAction(e -> goHome());
+
+        homeButton.setOnAction(e -> {
+            BuyerNetwork.updateOrder(orderId, "UNPAID_AND_CANCELLED", response -> {
+                if (response.getStatusCode() == 200) {
+                    goHome();
+                } else {
+                    System.out.println("خطا در لغو سفارش: " + response.getBody());
+                }
+            });
+        });
+
 
         backButton.setOnAction(e -> {
-            Stage currentStage = (Stage) backButton.getScene().getWindow();
-            currentStage.close();
+            BuyerNetwork.updateOrder(orderId, "UNPAID_AND_CANCELLED", response -> {
+                Platform.runLater(() -> {
+                    if (response.getStatusCode() == 200) {
+                        Stage currentStage = (Stage) backButton.getScene().getWindow();
+                        currentStage.close();
 
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/OrderBuyer.fxml"));
-                Parent root = loader.load();
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/OrderBuyer.fxml"));
+                            Parent root = loader.load();
 
-                Stage previousStage = new Stage();
-                previousStage.setScene(new Scene(root));
-                previousStage.show();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+                            Stage previousStage = new Stage();
+                            previousStage.setScene(new Scene(root));
+                            previousStage.show();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                            showAlert( "باز کردن صفحه سفارش‌ها با خطا مواجه شد.");
+                        }
+                    } else {
+                        showAlert( "لغو سفارش با خطا مواجه شد: " + response.getBody());
+                    }
+                });
+            });
         });
+
     }
 
     private void showAlert(String message) {
@@ -97,20 +148,20 @@ public class PaymentController {
     }
 
     private void goHome() {
-            Stage currentStage = (Stage) homeButton.getScene().getWindow();
-            currentStage.close();
+        Stage currentStage = (Stage) homeButton.getScene().getWindow();
+        currentStage.close();
 
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/BuyerPanel.fxml"));
-                Parent root = loader.load();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/BuyerPanel.fxml"));
+            Parent root = loader.load();
 
-                Stage stage = new Stage();
-                stage.setScene(new Scene(root));
-                stage.setTitle("خانه");
-                stage.show();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("خانه");
+            stage.show();
 
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }

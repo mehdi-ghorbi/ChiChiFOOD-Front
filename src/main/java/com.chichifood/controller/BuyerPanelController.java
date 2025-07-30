@@ -40,8 +40,6 @@ public class BuyerPanelController {
     private Button vendorSearchButton, itemSearchButton, favoriteButton, orderButton, profileButton;
     @FXML
     private VBox ordersBox, favoritesBox;
-
-    @FXML
     public void initialize() {
         profileButton.setOnAction(event -> {
             try {
