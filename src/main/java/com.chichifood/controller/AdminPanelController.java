@@ -21,8 +21,7 @@ public class AdminPanelController {
     private Button restaurantBtn;
     @FXML
     private Button usersBtn;
-    @FXML
-    private Button ordersBtn;
+
     @FXML
     private Button couponBtn;
 

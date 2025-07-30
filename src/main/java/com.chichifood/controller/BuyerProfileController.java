@@ -36,7 +36,7 @@ public class BuyerProfileController {
     @FXML private Label accountNumberLabel;
     @FXML private Button backBtn;
     @FXML private Button editBtn;
-
+    @FXML private Button depositBtn;
     public void initialize() {
         seedSampleData();
         backBtn.setOnAction(event -> {
@@ -45,7 +45,7 @@ public class BuyerProfileController {
                 Parent root = loader.load();
                 Stage stage = (Stage) backBtn.getScene().getWindow();
                 stage.setScene(new Scene(root));
-                stage.setTitle("Buyer Profile");
+                stage.setTitle("Home");
                 stage.show();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -54,6 +54,9 @@ public class BuyerProfileController {
         });
         editBtn.setOnAction(event -> {
             editProfile();
+        });
+        depositBtn.setOnAction(event -> {
+           // inja
         });
     }
     private void editProfile() {
