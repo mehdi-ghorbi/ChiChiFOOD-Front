@@ -19,7 +19,6 @@ public class Menu {
         this.title.set(title);
         this.items.setAll(items);
     }
-    // id property
     public long getId() {
         return id.get();
     }
@@ -32,7 +31,6 @@ public class Menu {
         return id;
     }
 
-    // title property
     public String getTitle() {
         return title.get();
     }
@@ -45,7 +43,6 @@ public class Menu {
         return title;
     }
 
-    // restaurant property
     public Restaurant getRestaurant() {
         return restaurant.get();
     }
@@ -58,7 +55,6 @@ public class Menu {
         return restaurant;
     }
 
-    // items property
     public ObservableList<Item> getItems() {
         return items;
     }

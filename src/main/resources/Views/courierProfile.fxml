@@ -14,13 +14,11 @@
         <VBox fx:id="mainVBox" alignment="TOP_CENTER" layoutX="200.0" layoutY="20.0" prefWidth="400" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="20.0">
 
             <children>
-                <!-- تصویر پروفایل -->
                 <Circle fx:id="profileCircle" radius="50" stroke="#ccc" strokeWidth="1" />
 
-                <!-- نام -->
+
                 <Label fx:id="nameLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="نام کاربر" />
 
-                <!-- اطلاعات تماس -->
                 <VBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10;                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5,0,0,2);">
                     <children>
                         <Label fx:id="phoneLabel" text="تلفن: ..." />
@@ -30,7 +28,6 @@
                     </children>
                 </VBox>
 
-                <!-- اطلاعات بانکی -->
                 <VBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10;                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5,0,0,2);">
                     <children>
                         <Label fx:id="bankNameLabel" text="بانک: ..." />
@@ -38,7 +35,6 @@
                     </children>
                 </VBox>
 
-                <!-- دکمه‌ها -->
                 <VBox alignment="CENTER" spacing="10.0">
                     <children>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">

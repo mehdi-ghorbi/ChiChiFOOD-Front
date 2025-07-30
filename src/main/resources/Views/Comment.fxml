@@ -16,7 +16,6 @@
             <Insets top="15" right="15" bottom="15" left="15"/>
         </padding>
 
-        <!-- Header Buttons -->
         <HBox spacing="10">
             <Button fx:id="homeButton" text="خانه" style="-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold;"/>
             <Button fx:id="backButton" text="بازگشت" style="-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold;"/>

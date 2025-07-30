@@ -115,7 +115,6 @@ public class User {
         return accountNumber;
     }
 
-    // --- Setter ها (در صورت نیاز)
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }

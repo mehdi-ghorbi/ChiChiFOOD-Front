@@ -12,7 +12,6 @@
             prefWidth="800.0" prefHeight="600.0"
             style="-fx-background-color: white;">
 
-    <!-- نوار بالا -->
     <top>
         <HBox spacing="10" alignment="CENTER_LEFT"
               style="-fx-background-color: #FF6F00;">
@@ -24,7 +23,6 @@
         </HBox>
     </top>
 
-    <!-- بخش نمایش رستوران‌ها -->
     <center>
         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
             <VBox fx:id="vendorsListBox" spacing="20"

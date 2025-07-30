@@ -3,7 +3,7 @@ package com.chichifood.network;
 public class ApiResponse {
     private int statusCode;
     private String body;
-    private Object data;  // داده تجزیه شده (مثلاً JSON به لیست یا شیء تبدیل شده)
+    private Object data;
 
     public ApiResponse(int statusCode, String body) {
         this.statusCode = statusCode;

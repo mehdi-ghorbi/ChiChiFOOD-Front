@@ -8,7 +8,6 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.chichifood.controller.PaymentController"
             prefWidth="800" prefHeight="600" style="-fx-background-color: white;">
 
-    <!-- نوار بالا: دکمه خانه و بازگشت -->
     <top>
         <HBox spacing="10" style="-fx-background-color: #ff6f00;">
             <padding>
@@ -19,28 +18,23 @@
         </HBox>
     </top>
 
-    <!-- محتوای صفحه -->
     <center>
         <VBox spacing="20" alignment="TOP_CENTER">
             <padding>
                 <Insets top="30" right="20" bottom="20" left="20"/>
             </padding>
 
-            <!-- قیمت کل -->
             <Label fx:id="totalPriceLabel" text="قیمت کل: " style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
-            <!-- موجودی کیف پول -->
             <HBox spacing="10" alignment="CENTER">
                 <Label text="موجودی کیف پول:" style="-fx-font-size: 14px;"/>
                 <Label fx:id="walletBalanceLabel" text="..." style="-fx-font-size: 14px; -fx-text-fill: green;"/>
             </HBox>
 
-            <!-- دکمه پرداخت آنلاین -->
             <Button fx:id="onlinePaymentButton" text="پرداخت آنلاین"
                     style="-fx-background-color: #ff6f00; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"
                     prefWidth="200" prefHeight="40"/>
 
-            <!-- دکمه پرداخت از طریق کیف پول -->
             <Button fx:id="walletPaymentButton" text="پرداخت از طریق کیف پول"
                     style="-fx-background-color: #ff6f00; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"
                     prefWidth="200" prefHeight="40"/>

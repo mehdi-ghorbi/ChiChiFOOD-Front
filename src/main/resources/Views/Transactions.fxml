@@ -7,7 +7,6 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.chichifood.controller.TransactionsController"
             prefWidth="800" prefHeight="600" style="-fx-background-color: white;">
 
-    <!-- نوار بالا: دکمه خانه و بازگشت -->
     <top>
         <HBox spacing="10" style="-fx-background-color: #ff6f00;">
             <padding>
@@ -18,7 +17,6 @@
         </HBox>
     </top>
 
-    <!-- محتوای تراکنش‌ها -->
     <center>
         <ScrollPane fitToWidth="true">
             <VBox fx:id="transactionsContainer" spacing="10">

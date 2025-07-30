@@ -99,7 +99,6 @@ public class SellerPanelController {
                             SessionManager.setRestaurantID(jsonObject.get("id").getAsString());
                             boolean isRestaurantConfirmed = jsonObject.get("isRestaurantConfirmed").getAsBoolean();
                             if (isRestaurantConfirmed) {
-                                // لود کردن پنل رستوران
                                 loader = new FXMLLoader(getClass().getResource("/views/RestaurantPanel.fxml"));
                                 scene = new Scene(loader.load());
                                 stage.setScene(scene);
@@ -108,7 +107,6 @@ public class SellerPanelController {
                                 showAlert("403", "Your Restaurant is not confirmed");
                             }
                         } else if (responseCode == 404) {
-                            // لود کردن صفحه ثبت رستوران
                             loader = new FXMLLoader(getClass().getResource("/views/RestaurantSignup.fxml"));
                             scene = new Scene(loader.load());
                             stage.setScene(scene);
@@ -165,7 +163,6 @@ public class SellerPanelController {
                             SessionManager.setRestaurantID(jsonObject.get("id").getAsString());
                             boolean isRestaurantConfirmed = jsonObject.get("isRestaurantConfirmed").getAsBoolean();
                             if (isRestaurantConfirmed) {
-                                // لود کردن پنل رستوران
                                 loader = new FXMLLoader(getClass().getResource("/views/orderPanel.fxml"));
                                 scene = new Scene(loader.load());
                                 stage.setScene(scene);
@@ -174,7 +171,6 @@ public class SellerPanelController {
                                 showAlert("403", "Your Restaurant is not confirmed");
                             }
                         } else if (responseCode == 404) {
-                            // لود کردن صفحه ثبت رستوران
                             loader = new FXMLLoader(getClass().getResource("/views/RestaurantSignup.fxml"));
                             scene = new Scene(loader.load());
                             stage.setScene(scene);

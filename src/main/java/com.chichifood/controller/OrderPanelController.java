@@ -234,7 +234,6 @@ public class OrderPanelController {
             selectedOrder.setStatus(newStatus);
             tableView.refresh();
 
-            // فراخوانی متد برای ارسال به سرور
             RestaurantNetwork.changeOrderStatus(
                     selectedOrder.getId(),
                     newStatus.getValue(),

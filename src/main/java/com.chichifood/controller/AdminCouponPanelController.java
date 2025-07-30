@@ -151,7 +151,6 @@ public class AdminCouponPanelController {
                 try {
                     JSONObject json = new JSONObject();
 
-                    // بررسی تغییرات
                     if (!codeField.getText().trim().equals(selectedCoupon.getCode())) {
                         json.put("coupon_code", codeField.getText().trim());
                     }
@@ -185,7 +184,6 @@ public class AdminCouponPanelController {
                         return null;
                     }
 
-                    // ارسال به سرور
                     AdminNetwork.updateCoupon(selectedCoupon.getId(), json, apiResponse -> {
                         Platform.runLater(() -> {
                             if (apiResponse.getStatusCode() == 200) {
@@ -217,7 +215,6 @@ public class AdminCouponPanelController {
         ButtonType addButtonType = new ButtonType("افزودن", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
 
-        // فیلدهای ورودی
         TextField codeField = new TextField();
         codeField.setPromptText("کد کوپن");
 
@@ -270,7 +267,6 @@ public class AdminCouponPanelController {
                         return null;
                     }
 
-                    // ساخت JSON برای ارسال به سرور
                     JSONObject json = new JSONObject();
                     json.put("coupon_code", code);
                     json.put("type", type);
@@ -280,11 +276,10 @@ public class AdminCouponPanelController {
                     json.put("start_date", startDate);
                     json.put("end_date", endDate);
 
-                    // ارسال به سرور
                     AdminNetwork.addCoupon(json, apiResponse -> {
                         Platform.runLater(() -> {
                             if ( apiResponse.getStatusCode() == 200) {
-                                seedSampleData(); // رفرش جدول
+                                seedSampleData();
                                 showAlert("موفقیت", "کوپن با موفقیت اضافه شد.");
                             } else {
                                 showAlert("خطا " + apiResponse.getStatusCode(), apiResponse.getBody());
@@ -313,12 +308,11 @@ public class AdminCouponPanelController {
                     Coupon coupon = new Coupon();
                     coupon.setId(obj.getLong("id"));
                     coupon.setCode(obj.getString("coupon_code"));
-                    coupon.setType(obj.getString("type")); // دستی به enum تبدیل می‌کنه
+                    coupon.setType(obj.getString("type"));
                     coupon.setValue(obj.getInt("value"));
                     coupon.setMinPrice(obj.getInt("min_price"));
                     coupon.setUserCount(obj.getInt("user_count"));
 
-                    // تاریخ‌ها رو اگر null نبودن، تبدیل کن
                     if (!obj.isNull("start_date")) {
                         coupon.setStartDate(LocalDate.parse(obj.getString("start_date")));
                     }
@@ -329,7 +323,6 @@ public class AdminCouponPanelController {
                     coupons.add(coupon);
                 }
 
-                // تنظیم در جدول (روی JavaFX thread)
                 Platform.runLater(() -> {
                     couponTable.setItems(FXCollections.observableArrayList(coupons));
                 });

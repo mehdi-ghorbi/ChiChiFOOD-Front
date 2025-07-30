@@ -123,7 +123,6 @@ public class FavoritesListController {
             });
         });
 
-        // اطلاعات متنی
         VBox infoBox = new VBox(5);
         Label vendorLabel = new Label("رستوران: " + restaurant.getName());
         vendorLabel.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 13px;");
@@ -139,7 +138,7 @@ public class FavoritesListController {
                         Parent root = loader.load();
 
                         VendorMenuController controller = loader.getController();
-                        controller.setVendor(fullVendor);  // حالا با منوها
+                        controller.setVendor(fullVendor);
 
                         Stage stage = new Stage();
                         stage.setTitle("منوی رستوران " + fullVendor.getName());

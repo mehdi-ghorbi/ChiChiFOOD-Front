@@ -57,32 +57,26 @@ public class Item {
     public void setImageBase64(String value) { imageBase64.set(value); }
     public StringProperty imageBase64Property() { return imageBase64; }
 
-    // Description
     public String getDescription() { return description.get(); }
     public void setDescription(String value) { description.set(value); }
     public StringProperty descriptionProperty() { return description; }
 
-    // Price
     public int getPrice() { return price.get(); }
     public void setPrice(int value) { price.set(value); }
     public IntegerProperty priceProperty() { return price; }
 
-    // Supply
     public int getSupply() { return supply.get(); }
     public void setSupply(int value) { supply.set(value); }
     public IntegerProperty supplyProperty() { return supply; }
 
-    // Keywords
     public List<String> getKeywords() { return keywords.get(); }
     public void setKeywords(List<String> value) { keywords.setAll(value); }
     public ListProperty<String> keywordsProperty() { return keywords; }
 
-    // Menus
     public List<Menu> getMenus() { return menus.get(); }
     public void setMenus(List<Menu> value) { menus.setAll(value); }
     public ListProperty<Menu> menusProperty() { return menus; }
 
-    // Restaurant
     public Restaurant getRestaurant() { return restaurant; }
     public void setRestaurant(Restaurant restaurant) { this.restaurant = restaurant; }
 }

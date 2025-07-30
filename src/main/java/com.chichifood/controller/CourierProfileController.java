@@ -90,7 +90,6 @@ public class CourierProfileController {
         TextField bankNameField = new TextField();
         TextField accountNumberField = new TextField();
 
-        // مقدار اولیه
         fullNameField.setPromptText(user.getFullName());
         phoneField.setPromptText(user.getPhone());
         emailField.setPromptText(user.getEmail());

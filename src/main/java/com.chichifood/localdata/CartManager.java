@@ -39,13 +39,12 @@ public class CartManager {
                 if (ci.getQuantity() > 1) {
                     ci.setQuantity(ci.getQuantity() - 1);
                 } else {
-                    iterator.remove(); // quantity == 1 → حذف آیتم
+                    iterator.remove();
                 }
                 break;
             }
         }
 
-        // اگر سبد خالی شد، حذفش کن از map
         if (cartItems.isEmpty()) {
             cartsByVendorId.remove(vendorId);
         }

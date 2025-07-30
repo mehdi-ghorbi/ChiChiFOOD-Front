@@ -38,13 +38,10 @@ public class DeliveryHistoryController {
         courierFeeColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getCourierFee()));
         restaurantNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getVendorName()));
 
-        // load orders
         seedSampleData();
 
-        // search
         searchButton.setOnAction(e -> filterOrders());
 
-        // back
         backButton.setOnAction(e -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/courierPanel.fxml"));
@@ -108,7 +105,6 @@ public class DeliveryHistoryController {
     }
 
     private String getRestaurantName(int vendorId) {
-        // اگر دیتا محلی داری، از DAO بگیر. فعلاً شبیه‌سازی می‌کنیم
         Map<Integer, String> dummyVendors = Map.of(
                 1, "رستوران اکبر جوجه",
                 2, "رستوران پیتزا فلفل",

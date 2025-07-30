@@ -158,16 +158,16 @@ public class OrdersBuyerController {
         }
 
         FlowPane flowPane = new FlowPane();
-        flowPane.setHgap(20); // فاصله افقی بین سبدها
-        flowPane.setVgap(20); // فاصله عمودی
-        flowPane.setPrefWrapLength(800); // عرض کل سطر قبل از رفتن به خط بعد (بسته به عرض صفحه تنظیم کن)
+        flowPane.setHgap(20);
+        flowPane.setVgap(20);
+        flowPane.setPrefWrapLength(800);
 
         for (Map.Entry<Integer, List<CartItem>> entry : carts.entrySet()) {
             int vendorId = entry.getKey();
             List<CartItem> cartItems = entry.getValue();
 
             VBox cartBox = new VBox(5);
-            cartBox.setPrefWidth(200); // عرض هر سبد
+            cartBox.setPrefWidth(200);
             cartBox.setStyle("-fx-border-color: gray; -fx-border-width: 1; -fx-padding: 10; -fx-background-color: #fefefe; -fx-background-radius: 6;");
 
             Label vendorLabel = new Label("رستوران ID: " + vendorId);
@@ -182,12 +182,12 @@ public class OrdersBuyerController {
 
             TextField couponIdField = new TextField();
             couponIdField.setPromptText("آیدی کوپن");
-            couponIdField.setMaxWidth(180); // محدود کردن عرض
+            couponIdField.setMaxWidth(180);
             cartBox.getChildren().add(couponIdField);
 
             TextField addressField = new TextField();
             addressField.setPromptText("آدرس تحویل");
-            addressField.setMaxWidth(180); // محدود کردن عرض
+            addressField.setMaxWidth(180);
             cartBox.getChildren().add(addressField);
 
             Button submitButton = new Button("ثبت سفارش");
@@ -348,7 +348,7 @@ public class OrdersBuyerController {
                                         Parent root = loader.load();
 
                                         VendorMenuController controller = loader.getController();
-                                        controller.setVendor(fullVendor);  // حالا با منوها
+                                        controller.setVendor(fullVendor);
 
                                         Stage stage = new Stage();
                                         stage.setTitle("منوی رستوران " + fullVendor.getName());
@@ -461,14 +461,13 @@ public class OrdersBuyerController {
                                         Parent root = loader.load();
 
                                         VendorMenuController controller = loader.getController();
-                                        controller.setVendor(fullVendor);  // حالا با منوها
+                                        controller.setVendor(fullVendor);
 
                                         Stage stage = new Stage();
                                         stage.setTitle("منوی رستوران " + fullVendor.getName());
                                         stage.setScene(new Scene(root));
                                         stage.show();
 
-                                        // بستن صفحه فعلی
                                         Stage currentStage = (Stage) vendorLabel.getScene().getWindow();
                                         currentStage.close();
                                     } catch (IOException ee) {

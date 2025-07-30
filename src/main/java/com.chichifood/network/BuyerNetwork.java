@@ -231,7 +231,6 @@ public class BuyerNetwork {
                 });
     }
 
-    // کلاس کمکی برای ساختن JSON آیتم‌ها
     public record ItemRequest(int itemId, int quantity) {}
 
     public static void getVendorsList(String vendorName, List<String> keywords, Consumer<ApiResponse> callback) {
@@ -297,7 +296,6 @@ public class BuyerNetwork {
                         try {
                             JsonObject json = JsonParser.parseString(body).getAsJsonObject();
 
-                            // گرفتن اطلاعات رستوران
                             JsonObject vendorJson = json.getAsJsonObject("vendor");
                             Restaurant vendor = new Restaurant(
                                     vendorJson.get("id").getAsInt(),
@@ -371,7 +369,6 @@ public class BuyerNetwork {
 
         HttpClient client = HttpClient.newHttpClient();
 
-        // ساخت JSON با Gson
         JsonObject jsonRequest = new JsonObject();
         jsonRequest.addProperty("search", itemName);
         jsonRequest.addProperty("price", itemPrice);

@@ -53,7 +53,6 @@ public class ItemsListController {
             card.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-radius: 5;");
             card.setPrefWidth(760);
 
-            // تصویر آیتم
             ImageView imageView = new ImageView();
             imageView.setFitWidth(100);
             imageView.setFitHeight(100);
@@ -72,14 +71,12 @@ public class ItemsListController {
             }
 
 
-            // اطلاعات متنی آیتم
             Label nameLabel = new Label(item.getName());
             nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
             Label descriptionLabel = new Label(item.getDescription());
             descriptionLabel.setWrapText(true);
 
-            // کنترل دکمه + و -
             HBox controls = new HBox(10);
             controls.setAlignment(Pos.CENTER_LEFT);
 
@@ -116,7 +113,6 @@ public class ItemsListController {
 
             controls.getChildren().addAll(plusBtn, countLabel, minusBtn);
 
-            // چیدن اجزا در کارت
             card.getChildren().addAll(nameLabel, imageView, descriptionLabel, controls);
             itemsContainer.getChildren().add(card);
         }

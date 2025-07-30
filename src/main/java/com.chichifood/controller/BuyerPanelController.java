@@ -212,7 +212,7 @@ public class BuyerPanelController {
                     sortedList.sort((a, b) -> {
                         double avgA = calculateAverageRating(a);
                         double avgB = calculateAverageRating(b);
-                        return Double.compare(avgB, avgA); // نزولی
+                        return Double.compare(avgB, avgA);
                     });
 
                     Platform.runLater(() -> {
@@ -269,7 +269,6 @@ public class BuyerPanelController {
         Button viewMenuButton = new Button("مشاهده منو");
         viewMenuButton.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6;");
         viewMenuButton.setOnAction(e -> {
-            // نمایش منو
         });
 
         box.getChildren().addAll(nameLabel, addressLabel, ratingLabel, viewMenuButton);

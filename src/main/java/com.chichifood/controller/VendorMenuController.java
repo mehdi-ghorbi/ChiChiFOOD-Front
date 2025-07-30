@@ -107,7 +107,7 @@ public class VendorMenuController {
         });
 
         favoriteIcon.setOnMouseClicked(event -> {
-            if (vendor == null) return;  // اطمینان از مقدار vendor
+            if (vendor == null) return;
 
             if (isFavorite) {
                 BuyerNetwork.removeFavoritesRestaurants(vendor.getId(), response -> {
@@ -115,7 +115,6 @@ public class VendorMenuController {
                         isFavorite = false;
                         Platform.runLater(() -> updateFavoriteIcon(false));
                     } else {
-                        // خطا در حذف: پیام یا لاگ
                     }
                 });
             } else {
@@ -124,7 +123,6 @@ public class VendorMenuController {
                         isFavorite = true;
                         Platform.runLater(() -> updateFavoriteIcon(true));
                     } else {
-                        // خطا در اضافه کردن: پیام یا لاگ
                     }
                 });
             }

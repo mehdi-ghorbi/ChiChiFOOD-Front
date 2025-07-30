@@ -60,7 +60,7 @@ public class BuyerProfileController {
             editProfile();
         });
         depositBtn.setOnAction(event -> {
-           // inja
+
         });
         logoutBtn.setOnAction(event -> {
             HttpRequest request = HttpRequest.newBuilder()

@@ -24,7 +24,6 @@
                 </columns>
             </TableView>
 
-            <!-- دکمه‌های منو -->
             <HBox spacing="10">
                 <Button fx:id="showFoodsBtn" text="نمایش غذاها" />
                 <Button fx:id="editMenuBtn" text="ویرایش منو" />
@@ -49,7 +48,6 @@
                 </columns>
             </TableView>
 
-            <!-- دکمه‌های غذا -->
             <HBox spacing="10">
                 <Button fx:id="editFoodBtn" text="ویرایش غذا" />
                 <Button fx:id="deleteFoodBtn" text="حذف غذا" />

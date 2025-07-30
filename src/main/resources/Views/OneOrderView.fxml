@@ -11,7 +11,6 @@
 
     <VBox spacing="15" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
 
-        <!-- دکمه خانه -->
         <Button fx:id="homeButton" text="خانه"
                 style="-fx-background-color: #FFA726; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;"
                 maxWidth="100"/>
@@ -20,7 +19,6 @@
                                         style="-fx-background-color: #FFA726; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;"
                                         maxWidth="100"/>
 
-        <!-- اطلاعات سفارش -->
         <VBox spacing="8" style="-fx-font-size: 14px;">
             <Label fx:id="orderIdLabel"/>
             <Label fx:id="vendorNameLabel"/>
@@ -34,7 +32,6 @@
             <Label fx:id="updatedAtLabel"/>
         </VBox>
 
-        <!-- لیست آیتم‌ها -->
         <Label text="آیتم‌ها:" style="-fx-font-weight: bold; -fx-text-fill: #FB8C00;"/>
         <VBox fx:id="itemsContainer" spacing="5" style="-fx-font-size: 13px;"/>
 

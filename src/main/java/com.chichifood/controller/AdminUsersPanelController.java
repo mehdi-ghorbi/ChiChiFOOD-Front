@@ -115,7 +115,7 @@ public class AdminUsersPanelController {
             Platform.runLater(() -> {
                 if (apiResponse.getStatusCode() == 200) {
                     showAlert("Success", "User has been successfully disabled.");
-                    seedSampleData(); // بروزرسانی جدول بعد از موفقیت
+                    seedSampleData();
                 } else {
                     showAlert("Error " + apiResponse.getStatusCode(), apiResponse.getBody());
                 }
@@ -157,7 +157,7 @@ public class AdminUsersPanelController {
                     userTable.setItems(users);
 
                 } catch (Exception e) {
-                    e.printStackTrace(); // یا نمایش پیام خطا
+                    e.printStackTrace();
                     SessionManager.showAlert(String.valueOf(apiResponse.getStatusCode()), apiResponse.getBody());
                 }
             });

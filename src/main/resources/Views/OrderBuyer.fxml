@@ -9,7 +9,6 @@
             prefWidth="800" prefHeight="600"
             style="-fx-background-color: white;">
 
-    <!-- نوار بالا -->
     <HBox spacing="10" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
         <padding>
             <Insets top="10" right="10" bottom="10" left="10"/>
@@ -20,7 +19,6 @@
                 style="-fx-background-color: #FFA726; -fx-text-fill: white; -fx-font-weight: bold;"/>
     </HBox>
 
-    <!-- نوار سرچ -->
     <HBox spacing="10" AnchorPane.topAnchor="50" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
         <padding>
             <Insets top="10" right="10" bottom="10" left="10"/>
@@ -31,7 +29,6 @@
                 style="-fx-background-color: #FB8C00; -fx-text-fill: white;"/>
     </HBox>
 
-    <!-- اسکرول و محتوا -->
     <ScrollPane fitToWidth="true" AnchorPane.topAnchor="100" AnchorPane.bottomAnchor="0"
                 AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
         <VBox fx:id="contentContainer" spacing="20">
@@ -39,21 +36,18 @@
                 <Insets top="15" right="15" bottom="15" left="15"/>
             </padding>
 
-            <!-- سفارش‌های در انتظار ثبت -->
             <VBox spacing="10">
                 <Label text="🕓 در انتظار ثبت"
                        style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #EF6C00;"/>
                 <VBox fx:id="pendingOrdersContainer" spacing="10"/>
             </VBox>
 
-            <!-- سفارش‌های فعال -->
             <VBox spacing="10">
                 <Label text="🚚 سفارش‌های فعال"
                        style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #EF6C00;"/>
                 <VBox fx:id="activeOrdersContainer" spacing="10"/>
             </VBox>
 
-            <!-- سفارش‌های گذشته -->
             <VBox spacing="10">
                 <Label text="📦 سفارش‌های گذشته"
                        style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #EF6C00;"/>

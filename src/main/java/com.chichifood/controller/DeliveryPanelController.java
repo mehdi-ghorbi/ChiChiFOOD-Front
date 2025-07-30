@@ -36,7 +36,6 @@ public class DeliveryPanelController {
 
     @FXML
     public void initialize() {
-        // اتصال ستون‌ها به فیلدهای کلاس Order
         addressColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDeliveryAddress()));
         feeColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getCourierFee()));
         restaurantColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getVendorName()));

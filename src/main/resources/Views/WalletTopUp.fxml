@@ -10,7 +10,6 @@
             prefWidth="800" prefHeight="600"
             style="-fx-background-color: white;">
 
-    <!-- Top buttons -->
     <top>
         <HBox spacing="10" padding="10" alignment="CENTER_LEFT">
             <Button fx:id="backButton" text="⬅ بازگشت"

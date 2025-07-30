@@ -165,14 +165,13 @@ public class RestaurantPanelController {
         dialog.getDialogPane().getButtonTypes().addAll(applyButtonType, ButtonType.CANCEL);
 
         TableView<Item> table = new TableView<>();
-        table.setEditable(true); // 💡 جدول باید قابل ویرایش باشه
+        table.setEditable(true);
 
         TableColumn<Item, Boolean> selectCol = new TableColumn<>("انتخاب");
         selectCol.setEditable(true);
 
         TableColumn<Item, String> nameCol = new TableColumn<>("نام غذا");
 
-        // ساخت map برای نگهداری وضعیت تیک‌خورده بودن آیتم‌ها
         Map<Item, BooleanProperty> selectedMap = new HashMap<>();
         for (Item item : allFoods) {
             boolean selected = menu.getItems().stream().anyMatch(i -> i.getId() == item.getId()); // مقایسه براساس ID
@@ -180,10 +179,8 @@ public class RestaurantPanelController {
             selectedMap.put(item, selectedProp);
         }
 
-        // اتصال تیک‌ها به selectedMap
         selectCol.setCellValueFactory(cellData -> selectedMap.get(cellData.getValue()));
 
-        // ✅ اتصال CheckBox به وضعیت قابل ویرایش
         selectCol.setCellFactory(column -> {
             CheckBoxTableCell<Item, Boolean> cell = new CheckBoxTableCell<>();
             cell.setEditable(true);
@@ -213,7 +210,7 @@ public class RestaurantPanelController {
         });
 
         dialog.showAndWait().ifPresent(newItemList -> {
-            List<Item> previousItems = new ArrayList<>(menu.getItems()); // کپی از آیتم‌های قبلی
+            List<Item> previousItems = new ArrayList<>(menu.getItems());
             List<Item> addedItems = new ArrayList<>();
             List<Item> removedItems = new ArrayList<>();
 
@@ -232,13 +229,10 @@ public class RestaurantPanelController {
                 }
             }
 
-            System.out.println("✅ آیتم‌های اضافه شده:");
             addedItems.forEach(i -> System.out.println("➕ " + i.getId() + " - " + i.getName()));
 
-            System.out.println("❌ آیتم‌های حذف شده:");
             removedItems.forEach(i -> System.out.println("➖ " + i.getId() + " - " + i.getName()));
 
-            // 🔄 ارسال به بک‌اند (تو باید این متد رو بسازی)
             updateMenuItems(resID, menu.getTitle(), addedItems, removedItems);
         });
     }
@@ -271,7 +265,6 @@ public class RestaurantPanelController {
                         alert.showAndWait();
                     });
                 } else {
-                    System.out.println("⚠️ برخی آیتم‌ها بروزرسانی نشدند.");
                     Platform.runLater(() -> {
                         Alert alert = new Alert(Alert.AlertType.WARNING, "برخی از آیتم‌ها بروزرسانی نشدند. جزئیات در کنسول.");
                         alert.showAndWait();
@@ -280,12 +273,10 @@ public class RestaurantPanelController {
             }
         };
 
-        // ارسال درخواست‌های اضافه کردن
         for (Item item : addedItems) {
             RestaurantNetwork.addItemToMenu(restaurantId, menuTitle, String.valueOf(item.getId()), callback);
         }
 
-        // ارسال درخواست‌های حذف
         for (Item item : removedItems) {
             RestaurantNetwork.deleteItemFromMenu(restaurantId, menuTitle, String.valueOf(item.getId()), callback);
         }
@@ -311,7 +302,6 @@ public class RestaurantPanelController {
 
         dialog.getDialogPane().setContent(grid);
 
-        // وقتی دکمه OK زده شد، مقدار title برگردون
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
                 String title = titleField.getText();
@@ -328,7 +318,6 @@ public class RestaurantPanelController {
             JsonObject json = new JsonObject();
             json.addProperty("title", title);
 
-            // ارسال به سرور
             RestaurantNetwork.addMenu(resID, json, apiResponse -> {
                 Platform.runLater(() -> {
                     if (apiResponse.getStatusCode() >= 200 && apiResponse.getStatusCode() < 300) {
@@ -402,7 +391,6 @@ public class RestaurantPanelController {
                         seedSampleData();
                         showAlert("موفقیت", "منو با موفقیت حذف شد.");
                     } else {
-                        // خطا — ارور رو نشون بده
                         showAlert(String.valueOf(apiResponse.getStatusCode()),  apiResponse.getBody());
                     }
                 });
@@ -421,7 +409,7 @@ public class RestaurantPanelController {
         dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
         TextField nameField = new TextField();
         TextField imageField = new TextField();
-        imageField.setEditable(false); // نذار دستی تغییر بده
+        imageField.setEditable(false);
 
         Button browseImageButton = new Button("انتخاب عکس");
         browseImageButton.setOnAction(e -> {
@@ -432,7 +420,7 @@ public class RestaurantPanelController {
             );
             File selectedFile = fileChooser.showOpenDialog(dialog.getDialogPane().getScene().getWindow());
             if (selectedFile != null) {
-                imageField.setText(selectedFile.getAbsolutePath()); // ذخیره مسیر کامل
+                imageField.setText(selectedFile.getAbsolutePath());
             }
         });
         TextArea descriptionField = new TextArea();
@@ -544,14 +532,12 @@ public class RestaurantPanelController {
 
         if (confirm("حذف غذا", "غذا حذف شود؟")) {
             RestaurantNetwork.deleteItem(resID,String.valueOf(item.getId()),apiResponse -> {
-                Platform.runLater(() -> {  // چون ممکنه این callback در thread غیر UI باشه، حتما UI update رو توی Platform.runLater انجام بده
+                Platform.runLater(() -> {
                     if (apiResponse.getStatusCode() >= 200 && apiResponse.getStatusCode() < 300) {
-                        // موفقیت — جدول رو آپدیت کن
                         System.out.println(apiResponse.getBody());
                         seedSampleData();
                         showAlert("موفقیت", "آیتم با موفقیت حذف شد.");
                     } else {
-                        // خطا — ارور رو نشون بده
                         showAlert(String.valueOf(apiResponse.getStatusCode()),  apiResponse.getBody());
                     }
                 });
@@ -659,13 +645,13 @@ public class RestaurantPanelController {
             );
             File selectedFile = fileChooser.showOpenDialog(dialog.getDialogPane().getScene().getWindow());
             if (selectedFile != null) {
-                imageField.setText(selectedFile.getAbsolutePath()); // ذخیره مسیر کامل
+                imageField.setText(selectedFile.getAbsolutePath());
             }
         });
         TextArea descriptionField = new TextArea();
         TextField priceField = new TextField();
         TextField supplyField = new TextField();
-        TextField keywordsField = new TextField(); // با کاما جدا بشن مثلا: pizza,cheese,fast
+        TextField keywordsField = new TextField();
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -688,7 +674,6 @@ public class RestaurantPanelController {
 
         dialog.getDialogPane().setContent(grid);
 
-        // مقدار خروجی دیالوگ وقتی OK زده شد
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
                 try {
@@ -716,7 +701,7 @@ public class RestaurantPanelController {
 
                     return item;
                 } catch (Exception e) {
-                    e.printStackTrace(); // نمایش بهتر خطا
+                    e.printStackTrace();
                     showAlert("خطا", "لطفاً مقادیر را درست وارد کنید.");
                     return null;
                 }
@@ -725,7 +710,6 @@ public class RestaurantPanelController {
         });
 
         dialog.showAndWait().ifPresent(item -> {
-            // بعد از وارد شدن اطلاعات توسط کاربر
             JsonObject json = new JsonObject();
             json.addProperty("name", item.getName());
             json.addProperty("imageBase64", item.getImageBase64());
@@ -740,14 +724,12 @@ public class RestaurantPanelController {
             json.add("keywords", keywordsArray);
             System.out.println(json.toString());
             RestaurantNetwork.addItem(resID, json, apiResponse -> {
-                Platform.runLater(() -> {  // چون ممکنه این callback در thread غیر UI باشه، حتما UI update رو توی Platform.runLater انجام بده
+                Platform.runLater(() -> {
                     if (apiResponse.getStatusCode() >= 200 && apiResponse.getStatusCode() < 300) {
-                        // موفقیت — جدول رو آپدیت کن
                         System.out.println(apiResponse.getBody());
                         seedSampleData();
                         showAlert("موفقیت", "آیتم با موفقیت اضافه شد.");
                     } else {
-                        // خطا — ارور رو نشون بده
                         showAlert(String.valueOf(apiResponse.getStatusCode()),  apiResponse.getBody());
                     }
                 });
@@ -764,7 +746,6 @@ public class RestaurantPanelController {
     }
 
     public static String resID;
-    // داده تستی
     private void seedSampleData() {
         RestaurantNetwork.getRestaurants(apiResponse -> {
             if (apiResponse.getStatusCode() == 200) {
@@ -835,7 +816,6 @@ public class RestaurantPanelController {
                 List<Map<String, Object>> items = gson.fromJson(json, type);
 
                 if (items == null) {
-                    System.out.println("⚠️ لیست آیتم‌ها خالی یا نامعتبره!");
                     return;
                 }
 

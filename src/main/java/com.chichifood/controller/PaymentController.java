@@ -32,8 +32,8 @@ public class PaymentController {
     @FXML
     private Label totalPriceLabel;
 
-    private int totalPrice = 0; // قیمت کل
-    private int walletBalance = 0; // موجودی کیف پول
+    private int totalPrice = 0;
+    private int walletBalance = 0;
     private int orderId;
 
     public void setPaymentInfo(int totalPrice, int orderId, int walletBalance) {
