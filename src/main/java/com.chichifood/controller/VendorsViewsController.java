@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
@@ -74,11 +75,17 @@ public class VendorsViewsController {
 
                 ImageView logoView = new ImageView();
                 try {
-                    byte[] imageBytes = Base64.getDecoder().decode(vendor.getLogoBase64());
-                    logoView.setImage(new Image(new ByteArrayInputStream(imageBytes)));
+                    File imageFile = new File(vendor.getLogoBase64());
+                    if (imageFile.exists()) {
+                        logoView.setImage(new Image(imageFile.toURI().toString()));
+                    } else {
+                        logoView.setImage(new Image("https://via.placeholder.com/80"));
+                    }
                 } catch (Exception e) {
                     logoView.setImage(new Image("https://via.placeholder.com/80"));
+                    e.printStackTrace();
                 }
+
                 logoView.setFitWidth(80);
                 logoView.setFitHeight(80);
                 logoView.setPreserveRatio(true);

@@ -33,6 +33,12 @@ public class Restaurant {
         this.name = name;
         this.isRestaurantConfirmed = isRestaurantConfirmed;
     }
+    public Restaurant(String name, String address, String phone, String logoBase64) {
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        this.logoBase64 = logoBase64;
+    }
 
     public int getId() {
         return id;

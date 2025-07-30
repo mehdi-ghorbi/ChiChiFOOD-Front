@@ -29,6 +29,8 @@ public class SellerPanelController {
     private Button orderPanelButton;
     @FXML
     private Button LogoutButton;
+    @FXML
+    private Button restaurantBtn;
 
     public void initialize() {
         NetworkService.getProfile(apiResponse -> {
@@ -59,6 +61,19 @@ public class SellerPanelController {
                 Stage stage = (Stage) profileButton.getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.setTitle("Seller Profile");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("خطا", "مشکل در بارگذاری صفحه پروفایل");
+            }
+        });
+        restaurantBtn.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/restaurantProfile.fxml"));
+                Parent root = loader.load();
+                Stage stage = (Stage) restaurantBtn.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Restaurant Profile");
                 stage.show();
             } catch (IOException e) {
                 e.printStackTrace();

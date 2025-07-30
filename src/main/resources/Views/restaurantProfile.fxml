@@ -9,32 +9,22 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chichifood.controller.BuyerProfileController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chichifood.controller.RestaurantProfileController">
     <children>
         <VBox fx:id="mainVBox" alignment="TOP_CENTER" layoutX="200.0" layoutY="20.0" prefWidth="400" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="20.0">
 
             <children>
-                <!-- تصویر پروفایل -->
+                <!-- دایره پروفایل -->
                 <Circle fx:id="profileCircle" radius="50" stroke="#ccc" strokeWidth="1" />
 
                 <!-- نام -->
-                <Label fx:id="nameLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="نام کاربر" />
+                <Label fx:id="nameLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="نام رستوران" />
 
                 <!-- اطلاعات تماس -->
-                <VBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10;                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5,0,0,2);">
+                <VBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5,0,0,2);">
                     <children>
                         <Label fx:id="phoneLabel" text="تلفن: ..." />
-                        <Label fx:id="emailLabel" text="ایمیل: ..." />
-                        <Label fx:id="roleLabel" text="نقش: ..." />
-                        <Label fx:id="addressLabel" text="آدرس: ..." />
-                    </children>
-                </VBox>
-
-                <!-- اطلاعات بانکی -->
-                <VBox alignment="CENTER_RIGHT" spacing="5.0" style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10;                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5,0,0,2);">
-                    <children>
-                        <Label fx:id="bankNameLabel" text="بانک: ..." />
-                        <Label fx:id="accountNumberLabel" text="شماره حساب: ..." />
+                        <Label fx:id="addressLabel" text="ادرس:..." />
                     </children>
                 </VBox>
 
@@ -54,14 +44,6 @@
                                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                     </HBox.margin>
                                 </Button>
-                        <Button fx:id="depositBtn" mnemonicParsing="false" text="Deposit">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                           <HBox.margin>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </HBox.margin>
-                        </Button>
 
                                 <Button fx:id="backBtn" mnemonicParsing="false" text="Back">
                                     <font>
@@ -70,9 +52,6 @@
                                     <padding>
                                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                     </padding>
-                                    <HBox.margin>
-                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                    </HBox.margin>
                                 </Button>
                             </children>
                         </HBox>
