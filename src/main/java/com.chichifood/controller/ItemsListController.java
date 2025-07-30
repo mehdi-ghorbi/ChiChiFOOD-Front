@@ -16,6 +16,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
@@ -58,11 +59,18 @@ public class ItemsListController {
             imageView.setFitHeight(100);
             imageView.setPreserveRatio(true);
             try {
-                byte[] imageBytes = Base64.getDecoder().decode(item.getImageBase64());
-                imageView.setImage(new Image(new ByteArrayInputStream(imageBytes)));
+                File imageFile = new File(item.getImageBase64());
+                if (imageFile.exists()) {
+                    Image image = new Image(imageFile.toURI().toString());
+                    imageView.setImage(image);
+                } else {
+                    System.out.println("فایل تصویر یافت نشد برای آیتم " + item.getId());
+                }
             } catch (Exception e) {
                 System.out.println("خطا در بارگذاری عکس برای آیتم " + item.getId());
+                e.printStackTrace();
             }
+
 
             // اطلاعات متنی آیتم
             Label nameLabel = new Label(item.getName());

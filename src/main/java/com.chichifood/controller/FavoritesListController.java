@@ -89,7 +89,6 @@ public class FavoritesListController {
         imageView.setPreserveRatio(true);
         imageView.setImage(base64ToImage(restaurant.getLogoBase64()));
 
-        // بزرگ شدن تصویر هنگام hover
         imageView.setOnMouseEntered(e -> {
             imageView.setScaleX(1.1);
             imageView.setScaleY(1.1);

@@ -216,9 +216,16 @@ public class VendorMenuController {
                 imageView.setFitHeight(100);
                 imageView.setPreserveRatio(true);
                 try {
-                    byte[] imageBytes = Base64.getDecoder().decode(item.getImageBase64());
-                    imageView.setImage(new Image(new ByteArrayInputStream(imageBytes)));
-                } catch (Exception e) {}
+                    File imageFile = new File(item.getImageBase64());
+                    if (imageFile.exists()) {
+                        imageView.setImage(new Image(imageFile.toURI().toString()));
+                    } else {
+                        System.out.println("تصویر یافت نشد برای آیتم: " + item.getId());
+                    }
+                } catch (Exception e) {
+                    System.out.println("خطا در بارگذاری تصویر آیتم: " + item.getId());
+                    e.printStackTrace();
+                }
 
                 Label descLabel = new Label(item.getDescription());
                 descLabel.setWrapText(true);
