@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.chichifood.controller.TransactionsController"
+            prefWidth="800" prefHeight="600" style="-fx-background-color: white;">
+
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #ff6f00;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button fx:id="homeButton" text="خانه" style="-fx-background-color: white; -fx-text-fill: #ff6f00; -fx-font-weight: bold;"/>
+            <Button fx:id="backButton" text="بازگشت" style="-fx-background-color: white; -fx-text-fill: #ff6f00; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <VBox fx:id="transactionsContainer" spacing="10">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

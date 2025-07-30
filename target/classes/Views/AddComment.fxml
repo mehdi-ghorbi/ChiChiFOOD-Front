@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.chichifood.controller.AddCommentController"
+            prefWidth="800" prefHeight="600"
+            style="-fx-background-color: white;">
+
+    <VBox spacing="20" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <padding>
+            <Insets top="15" right="15" bottom="15" left="15"/>
+        </padding>
+
+        <HBox spacing="10">
+            <Button fx:id="homeButton" text="خانه" style="-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Button fx:id="backButton" text="بازگشت" style="-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        </HBox>
+
+        <Label text="ثبت نظر جدید"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: orange;"/>
+
+        <VBox spacing="10">
+            <Label text="نظر شما:" />
+            <TextArea fx:id="commentField" promptText="نظر خود را وارد کنید..." prefRowCount="3"/>
+
+            <Label text="امتیاز (۰ تا ۵):" />
+            <TextField fx:id="scoreField" promptText="مثلاً: ۵"/>
+
+            <Label text="بارگذاری عکس‌ها:" />
+            <Button fx:id="uploadImagesButton"
+                    text="انتخاب عکس‌ها"
+                    style="-fx-background-color: orange; -fx-text-fill: white;"/>
+
+            <Label fx:id="selectedImagesLabel" text="هیچ عکسی انتخاب نشده." style="-fx-text-fill: gray;" />
+        </VBox>
+
+        <Button fx:id="submitButton"
+                text="ثبت نظر"
+                style="-fx-background-color: orange; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+    </VBox>
+</AnchorPane>

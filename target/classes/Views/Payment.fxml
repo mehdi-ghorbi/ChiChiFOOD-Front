@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.chichifood.controller.PaymentController"
+            prefWidth="800" prefHeight="600" style="-fx-background-color: white;">
+
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #ff6f00;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button fx:id="homeButton" text="خانه" style="-fx-background-color: white; -fx-text-fill: #ff6f00; -fx-font-weight: bold;"/>
+            <Button fx:id="backButton" text="بازگشت" style="-fx-background-color: white; -fx-text-fill: #ff6f00; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" alignment="TOP_CENTER">
+            <padding>
+                <Insets top="30" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label fx:id="totalPriceLabel" text="قیمت کل: " style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="موجودی کیف پول:" style="-fx-font-size: 14px;"/>
+                <Label fx:id="walletBalanceLabel" text="..." style="-fx-font-size: 14px; -fx-text-fill: green;"/>
+            </HBox>
+
+            <Button fx:id="onlinePaymentButton" text="پرداخت آنلاین"
+                    style="-fx-background-color: #ff6f00; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"
+                    prefWidth="200" prefHeight="40"/>
+
+            <Button fx:id="walletPaymentButton" text="پرداخت از طریق کیف پول"
+                    style="-fx-background-color: #ff6f00; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"
+                    prefWidth="200" prefHeight="40"/>
+        </VBox>
+    </center>
+</BorderPane>
