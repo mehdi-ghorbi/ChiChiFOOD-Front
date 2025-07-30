@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="Views.Comment"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.chichifood.controller.CommentController"
+            prefWidth="800" prefHeight="600"
+            style="-fx-background-color: white;">
 
+    <VBox spacing="20" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <padding>
+            <Insets top="15" right="15" bottom="15" left="15"/>
+        </padding>
+
+        <!-- Header Buttons -->
+        <HBox spacing="10">
+            <Button fx:id="homeButton" text="خانه" style="-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Button fx:id="backButton" text="بازگشت" style="-fx-background-color: orange; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        </HBox>
+
+        <Label text="نظرات کاربران"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: orange;"/>
+
+        <ScrollPane fitToWidth="true">
+            <VBox fx:id="ratingsContainer" spacing="15">
+                <padding>
+                    <Insets top="5" right="5" bottom="5" left="5"/>
+                </padding>
+            </VBox>
+        </ScrollPane>
+    </VBox>
 </AnchorPane>

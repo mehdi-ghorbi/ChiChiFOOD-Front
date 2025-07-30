@@ -479,8 +479,33 @@ public class OrdersBuyerController {
                         });
 
                         Label priceLabel = new Label("مبلغ: " + payPrice + " تومان");
+                        Label addComment = new Label("ثبت نظر");
+                        addComment.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 11px;");
+                        addComment.setCursor(Cursor.HAND);
+                        addComment.setOnMouseEntered(e -> addComment.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 13px; -fx-font-weight: bold;"));
+                        addComment.setOnMouseExited(e -> addComment.setStyle("-fx-text-fill: #EF6C00; -fx-font-size: 11px;"));
 
-                        card.getChildren().addAll(title, vendorLabel, priceLabel);
+                        addComment.setOnMouseClicked(e -> {
+
+                                    try {
+                                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorsMenuView.fxml"));
+                                        Parent root = loader.load();
+
+
+                                        Stage stage = new Stage();
+                                        stage.setTitle("ثبت نظر " );
+                                        stage.setScene(new Scene(root));
+                                        stage.show();
+
+                                        Stage currentStage = (Stage) addComment.getScene().getWindow();
+                                        currentStage.close();
+                                    } catch (IOException ee) {
+                                        ee.printStackTrace();
+                                    }
+
+
+                        });
+                        card.getChildren().addAll(title, vendorLabel, priceLabel, addComment);
                         flowPane.getChildren().add(card);
                     }
 

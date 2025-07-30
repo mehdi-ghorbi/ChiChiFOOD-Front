@@ -1,56 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      fx:controller="com.chichifood.controller.BuyerPanelController"
-      prefWidth="800" prefHeight="600"
-      spacing="20"
-      style="-fx-padding: 20; -fx-background-color: #FFFFFF;">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="com.chichifood.controller.BuyerPanelController"
+            prefWidth="800" prefHeight="600"
+            style="-fx-background-color: #FFFFFF;">
 
-    <HBox alignment="TOP_RIGHT">
-        <Region fx:id="spacer" HBox.hgrow="ALWAYS"/>
-        <Button fx:id="profileButton"
-                text="👤"
-                style="-fx-background-color: #FF9800;
-                       -fx-text-fill: white;
-                       -fx-font-size: 18;
-                       -fx-background-radius: 50%;
-                       -fx-min-width: 40px;
-                       -fx-min-height: 40px;
-                       -fx-max-width: 40px;
-                       -fx-max-height: 40px;
-                       -fx-cursor: hand;" />
-    </HBox>
-
-    <VBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-padding: 15; -fx-background-radius: 10; -fx-border-color: #FF9800; -fx-border-width: 1;">
-        <Label text="Vendors" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333;" />
-        <HBox spacing="10">
-            <TextField fx:id="searchRestaurant" promptText="Restaurant name" />
-            <TextField fx:id="vendorKeywords" promptText="Keywords" />
-            <Button fx:id="vendorSearchButton" text="🔍"
-                    style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6;" />
+    <!-- نوار بالایی -->
+    <top>
+        <HBox alignment="TOP_RIGHT">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="profileButton"
+                    text="👤"
+                    style="-fx-background-color: #FF9800;
+                           -fx-text-fill: white;
+                           -fx-font-size: 18;
+                           -fx-background-radius: 50%;
+                           -fx-min-width: 40px;
+                           -fx-min-height: 40px;
+                           -fx-max-width: 40px;
+                           -fx-max-height: 40px;
+                           -fx-cursor: hand;" />
         </HBox>
-    </VBox>
+    </top>
 
-    <VBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-padding: 15; -fx-background-radius: 10; -fx-border-color: #FF9800; -fx-border-width: 1;">
-        <Label text="Items" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333;" />
-        <HBox spacing="10">
-            <TextField fx:id="itemName" promptText="Name" />
-            <TextField fx:id="itemPrice" promptText="Price (number)" />
-            <TextField fx:id="itemKeywords" promptText="Keyword" />
-            <Button fx:id="itemSearchButton" text="🔍"
-                    style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6;" />
-        </HBox>
-    </VBox>
+    <!-- محتوای اصلی در اسکرول‌پن -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox spacing="20" style="-fx-background-color: #FFFFFF;">
+                <padding>
+                    <Insets top="15" right="15" bottom="15" left="15"/>
+                </padding>
 
-    <HBox spacing="15" alignment="CENTER">
-        <Button fx:id="orderButton" text="Orders"
-                style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20; -fx-font-size: 14;" />
-        <Button fx:id="favoriteButton" text="Favorites"
-                style="-fx-background-color: #FFA726; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20; -fx-font-size: 14;" />
-    </HBox>
+                <!-- باکس جستجوی رستوران -->
+                <VBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-border-color: #FF9800; -fx-border-width: 1;">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="جستجوی رستوران" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333;" />
+                    <HBox spacing="10">
+                        <TextField fx:id="searchRestaurant" promptText="نام رستوران" />
+                        <TextField fx:id="vendorKeywords" promptText="کلیدواژه‌ها" />
+                        <Button fx:id="vendorSearchButton" text="🔍"
+                                style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6;" />
+                    </HBox>
+                </VBox>
 
-</VBox>
+                <!-- باکس جستجوی آیتم -->
+                <VBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-border-color: #FF9800; -fx-border-width: 1;">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="جستجوی آیتم" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333;" />
+                    <HBox spacing="10">
+                        <TextField fx:id="itemName" promptText="نام" />
+                        <TextField fx:id="itemPrice" promptText="قیمت (عدد)" />
+                        <TextField fx:id="itemKeywords" promptText="کلیدواژه‌ها" />
+                        <Button fx:id="itemSearchButton" text="🔍"
+                                style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6;" />
+                    </HBox>
+                </VBox>
+
+                <!-- دکمه‌ها -->
+                <HBox spacing="15" alignment="CENTER">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Button fx:id="orderButton" text="سفارش‌ها"
+                            style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20; -fx-font-size: 14;" />
+                    <Button fx:id="favoriteButton" text="موردعلاقه‌ها"
+                            style="-fx-background-color: #FFA726; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20; -fx-font-size: 14;" />
+                </HBox>
+
+                <!-- لیست رستوران‌ها -->
+                <VBox fx:id="vendorsContainer" spacing="15">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
