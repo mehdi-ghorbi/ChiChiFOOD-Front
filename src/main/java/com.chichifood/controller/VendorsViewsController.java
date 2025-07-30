@@ -84,7 +84,6 @@ public class VendorsViewsController {
                 logoView.setPreserveRatio(true);
                 logoView.setStyle("-fx-cursor: hand;");
 
-// افکت hover
                 logoView.setOnMouseEntered(event -> {
                     logoView.setScaleX(1.1);
                     logoView.setScaleY(1.1);
@@ -118,8 +117,6 @@ public class VendorsViewsController {
                     scaleDown.playFromStart();
                 });
 
-// کلیک رو
-                // کلیک روی نام رستوران -> باز کردن صفحه منوی رستوران
                 nameButton.setOnMouseClicked(event -> openVendorMenu(vendor));
 
                 VBox infoBox = new VBox(5);

@@ -18,14 +18,12 @@
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
 
-    <!-- فقط دکمه خانه -->
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Button fx:id="homeButton"
                 text="خانه"
                 style="-fx-background-color: #FF8C00; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 4, 0.1, 0, 2);"/>
     </HBox>
 
-    <!-- همه چیز درون Scroll -->
     <ScrollPane fitToWidth="true"
                 style="-fx-background-color: transparent;"
                 fx:id="scrollPane">
@@ -37,26 +35,27 @@
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
 
-            <!-- اطلاعات رستوران -->
             <VBox spacing="10"
                   style="-fx-background-color: #FFF4E5; -fx-border-color: #FF8C00; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 15;">
 
-                <!-- نام رستوران + قلب در یک خط -->
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label fx:id="restaurantNameLabel"
                            style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #FF8C00;"/>
                     <Button fx:id="favoriteIcon" text="♡"
                             style="
-          -fx-font-size: 24px;
-          -fx-background-color: transparent;
-          -fx-background-insets: 0;
-          -fx-padding: 0 0 0 0;
-          -fx-border-color: transparent;
-          -fx-border-width: 0;
-          -fx-cursor: hand;
-          -fx-focus-color: transparent;
-          -fx-faint-focus-color: transparent;
-        "/>
+      -fx-font-size: 24px;
+      -fx-background-color: transparent;
+      -fx-background-insets: 0;
+      -fx-padding: 0 0 0 0;
+      -fx-border-color: transparent;
+      -fx-border-width: 0;
+      -fx-cursor: hand;
+      -fx-focus-color: transparent;
+      -fx-faint-focus-color: transparent;
+    "/>
+
+                    <Button fx:id="reviewsButton" text="نظرات"
+                                           style="-fx-background-color: #FFA500; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"/>
                 </HBox>
 
                 <Label fx:id="restaurantAddressLabel"
@@ -68,7 +67,6 @@
                            style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"/>
             </VBox>
 
-            <!-- کانتینر منوها -->
             <VBox fx:id="menusContainer" spacing="15"/>
         </VBox>
     </ScrollPane>

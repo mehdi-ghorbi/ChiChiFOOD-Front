@@ -193,58 +193,6 @@ public class BuyerPanelController {
                 e.printStackTrace();
             }
         });
-//        favoriteButton.setOnAction(event -> {
-//            BuyerNetwork.getFavoritesRestaurants(apiResponse -> {
-//                Platform.runLater(() -> {
-//                    int statusCode = apiResponse.getStatusCode();
-//                    String body = apiResponse.getBody();
-//
-//                    if (statusCode == 200) {
-//                        try {
-//                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/FavoritesPanel.fxml"));
-//                            Parent root = loader.load();
-//
-//                            FavoritesListController controller = loader.getController();
-//
-//                            // پارس کردن body و استخراج لیست رستوران‌ها
-//                            JsonObject jsonObject = JsonParser.parseString(body).getAsJsonObject();
-//                            JsonArray favoritesArray = jsonObject.getAsJsonArray("favorites");
-//
-//                            List<Restaurant> favoriteRestaurants = new ArrayList<>();
-//                            for (JsonElement element : favoritesArray) {
-//                                JsonObject obj = element.getAsJsonObject();
-//                                Restaurant r = new Restaurant(
-//                                        obj.get("id").getAsInt(),
-//                                        obj.get("name").getAsString(),
-//                                        obj.get("address").getAsString(),
-//                                        obj.get("phone").getAsString(),
-//                                        obj.get("logo").getAsString(),
-//                                        obj.get("tax_fee").getAsInt(),
-//                                        obj.get("additional_fee").getAsInt()
-//                                );
-//                                favoriteRestaurants.add(r);
-//                            }
-//
-//                            controller.setFavorites(favoriteRestaurants);
-//
-//                            Stage stage = new Stage();
-//                            stage.setTitle("رستوران‌های مورد علاقه");
-//                            stage.setScene(new Scene(root));
-//                            stage.show();
-//
-//                            // بستن پنل قبلی
-//                            ((Stage) favoriteButton.getScene().getWindow()).close();
-//
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    } else {
-//                        // مثلا پیام خطا نمایش بده
-//                        System.out.println("خطا در دریافت لیست مورد علاقه‌ها: " + body);
-//                    }
-//                });
-//            });
-//        });
     }
     public boolean isNumeric(String str) {
         if (str == null || str.isEmpty()) return false;
