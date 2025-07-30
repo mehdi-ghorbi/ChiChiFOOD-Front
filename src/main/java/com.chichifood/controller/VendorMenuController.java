@@ -23,6 +23,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
@@ -116,10 +117,13 @@ public class VendorMenuController {
         restaurantPhoneLabel.setText("تلفن: " + vendor.getPhone());
 
         if (vendor.getLogoBase64() != null && !vendor.getLogoBase64().isEmpty()) {
-            byte[] imageBytes = Base64.getDecoder().decode(vendor.getLogoBase64());
-            Image image = new Image(new ByteArrayInputStream(imageBytes));
-            restaurantLogo.setImage(image);
+            File imageFile = new File(vendor.getLogoBase64());
+            if (imageFile.exists()) {
+                Image image = new Image(imageFile.toURI().toString());
+                restaurantLogo.setImage(image);
+            }
         }
+
 
         BuyerNetwork.getFavoritesRestaurants(response -> {
             if (response.getStatusCode() != 200) {

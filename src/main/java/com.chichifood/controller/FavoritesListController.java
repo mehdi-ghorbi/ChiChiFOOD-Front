@@ -16,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import java.io.*;
+
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -23,9 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.json.JSONString;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.File;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -184,8 +184,13 @@ public class FavoritesListController {
         return card;
     }
 
-    private Image base64ToImage(String base64) {
-        byte[] bytes = Base64.getDecoder().decode(base64);
-        return new Image(new ByteArrayInputStream(bytes));
+    private Image base64ToImage(String base64Path) {
+        try {
+            FileInputStream inputStream = new FileInputStream(base64Path);
+            return new Image(inputStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

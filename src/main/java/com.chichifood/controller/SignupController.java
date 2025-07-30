@@ -96,6 +96,11 @@ public class SignupController {
             );
             return;
         }
+        if (!phone.startsWith("09")){
+            Platform.runLater(()
+            -> showAlert("Validation Error", "Please enter a valid phone number."));
+            return;
+        }
 
         String imagePath = selectedImageFile.getAbsolutePath().replace("\\", "/");
 
