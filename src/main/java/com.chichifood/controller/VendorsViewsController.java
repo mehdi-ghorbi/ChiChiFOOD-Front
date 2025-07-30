@@ -94,19 +94,16 @@ public class VendorsViewsController {
                     logoView.setScaleY(1.0);
                 });
 
-// کلیک روی عکس -> باز کردن صفحه منوی رستوران
                 logoView.setOnMouseClicked(event -> openVendorMenu(vendor));
 
                 Button nameButton = new Button(vendor.getName());
                 nameButton.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: #333; -fx-cursor: hand;");
                 nameButton.setPadding(new Insets(0)); // برای کم کردن padding دکمه که شبیه label بشه
 
-// ساخت انیمیشن بزرگ شدن
                 ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), nameButton);
                 scaleUp.setToX(1.2);
                 scaleUp.setToY(1.2);
 
-// ساخت انیمیشن برگشت به حالت اولیه
                 ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), nameButton);
                 scaleDown.setToX(1.0);
                 scaleDown.setToY(1.0);

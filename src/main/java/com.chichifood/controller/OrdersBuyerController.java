@@ -6,10 +6,7 @@ import com.chichifood.model.Restaurant;
 import com.chichifood.network.BuyerNetwork;
 import com.chichifood.localdata.*;
 import com.chichifood.network.NetworkService;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +19,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +42,15 @@ public class OrdersBuyerController {
     @FXML private VBox pendingOrdersContainer;
     @FXML private VBox activeOrdersContainer;
     @FXML private VBox pastOrdersContainer;
+
+
+
+    public void setPreviousStage(Stage previousStage) {
+        this.previousStage = previousStage;
+    }
+
+    private Stage previousStage;
+    private Stage currentStage;
 
     @FXML
     public void initialize() {
@@ -137,6 +144,9 @@ public class OrdersBuyerController {
         showActiveOrders();
         showPastOrders();
     }
+    public void setStage(Stage stage) {
+        this.currentStage = stage;
+    }
     private void showPendingOrders() {
         Map<Integer, List<CartItem>> carts = CartManager.getAllCarts();
         pendingOrdersContainer.getChildren().clear();
@@ -193,7 +203,6 @@ public class OrdersBuyerController {
                 }
 
                 int couponId = couponIdText.isEmpty() ? -1 : Integer.parseInt(couponIdText);
-
                 List<BuyerNetwork.ItemRequest> itemRequests = cartItems.stream()
                         .map(ci -> new BuyerNetwork.ItemRequest(ci.getItem().getId(), ci.getQuantity()))
                         .toList();
@@ -201,29 +210,37 @@ public class OrdersBuyerController {
                 BuyerNetwork.submitOrder(address, vendorId, couponId, itemRequests, response -> {
                     Platform.runLater(() -> {
                         if (response.getStatusCode() == 200 || response.getStatusCode() == 201) {
-                            showAlert("موفقیت", "سفارش با موفقیت ثبت شد.");
                             CartManager.clearCart(vendorId);
-                            showPendingOrders(); // رفرش سبدها
+
+                            JsonObject json = JsonParser.parseString(response.getBody()).getAsJsonObject();
+                            int orderID = json.get("id").getAsInt();
+                            int price = json.get("pay_price").getAsInt();
+                            int walletBalance = json.get("wallet_ballance").getAsInt();
+
+                            showPendingOrders();
+
+                            try {
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Payment.fxml"));
+                                Parent root = loader.load();
+
+                                PaymentController controller = loader.getController();
+                                controller.setPaymentInfo(price, orderID, walletBalance);
+
+                                Stage stage = new Stage();
+                                stage.setScene(new Scene(root));
+                                stage.setTitle("پرداخت");
+                                stage.show();
+
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                                showAlert("خطا", "مشکلی در نمایش صفحه پرداخت به وجود آمد.");
+                            }
+
                         } else {
                             showAlert("خطا", "ثبت سفارش ناموفق بود: " + response.getBody());
                         }
                     });
                 });
-                Stage currentStage = (Stage) submitButton.getScene().getWindow();
-                currentStage.close();
-
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Payment.fxml"));
-                    Parent root = loader.load();
-
-                    Stage stage = new Stage();
-                    stage.setScene(new Scene(root));
-                    stage.setTitle("پرداخت");
-                    stage.show();
-
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
 
             });
 
@@ -471,87 +488,6 @@ public class OrdersBuyerController {
                         pastOrdersContainer.getChildren().add(new Label("هیچ سفارش تحویل‌داده‌شده‌ای وجود ندارد."));
                     } else {
                         pastOrdersContainer.getChildren().add(flowPane);
-                    }
-                });
-            } else {
-                Platform.runLater(() -> {
-                    pastOrdersContainer.getChildren().clear();
-                    Label label = new Label("خطا در دریافت سفارش‌های گذشته: " + response.getBody());
-                    pastOrdersContainer.getChildren().add(label);
-                });
-            }
-        });
-    }
-
-    private void showAhctiveOrders() {
-        int userId = buyerId();
-        BuyerNetwork.getAllUserOrders(userId, response -> {
-            if (response.getStatusCode() == 200) {
-                Platform.runLater(() -> {
-                    activeOrdersContainer.getChildren().clear();
-
-                    JsonArray orders = JsonParser.parseString(response.getBody()).getAsJsonArray();
-
-                    for (JsonElement elem : orders) {
-                        JsonObject order = elem.getAsJsonObject();
-
-                        String status = order.get("status").getAsString();
-                        if ((status.equals("COMPLETED") || status.equals("CANCELLED") || status.equals("UNPAID_AND_CANCELLED") || status.equals("SUBMITTED"))) continue; // فقط سفارش‌های تحویل‌داده‌شده
-
-                        int orderId = order.get("id").getAsInt();
-                        String vendorName = order.get("vendorName").getAsString();
-                        int payPrice = order.get("payPrice").getAsInt();
-
-                        Label label = new Label("سفارش #" + orderId +
-                                " | رستوران: " + vendorName +
-                                " | مبلغ: " + payPrice + " تومان");
-
-                        activeOrdersContainer.getChildren().add(label);
-                    }
-
-                    if (activeOrdersContainer.getChildren().isEmpty()) {
-                        activeOrdersContainer.getChildren().add(new Label("هیچ سفارش فعالی وجود ندارد."));
-                    }
-                });
-            } else {
-                Platform.runLater(() -> {
-                    activeOrdersContainer.getChildren().clear();
-                    Label label = new Label("خطا در دریافت سفارش‌های فعال: " + response.getBody());
-                    activeOrdersContainer.getChildren().add(label);
-                });
-            }
-        });
-    }
-
-    private void showPafstOrders() {
-        int userId = buyerId();
-        BuyerNetwork.getAllUserOrders(userId, response -> {
-            if (response.getStatusCode() == 200) {
-                Platform.runLater(() -> {
-                    pastOrdersContainer.getChildren().clear();
-
-                    JsonArray orders = JsonParser.parseString(response.getBody()).getAsJsonArray();
-
-                    for (JsonElement elem : orders) {
-                        JsonObject order = elem.getAsJsonObject();
-
-                        String status = order.get("status").getAsString();
-                        System.out.println(status);
-
-                        if (!(status.equals("COMPLETED") || status.equals("CANCELLED") || status.equals("UNPAID_AND_CANCELLED"))) continue;
-                        int orderId = order.get("id").getAsInt();
-                        String vendorName = order.get("vendorName").getAsString();
-                        int payPrice = order.get("payPrice").getAsInt();
-
-                        Label label = new Label("سفارش #" + orderId +
-                                " | رستوران: " + vendorName +
-                                " | مبلغ: " + payPrice + " تومان");
-
-                        pastOrdersContainer.getChildren().add(label);
-                    }
-
-                    if (pastOrdersContainer.getChildren().isEmpty()) {
-                        pastOrdersContainer.getChildren().add(new Label("هیچ سفارش تحویل‌داده‌شده‌ای وجود ندارد."));
                     }
                 });
             } else {

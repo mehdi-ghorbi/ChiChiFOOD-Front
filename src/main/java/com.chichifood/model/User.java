@@ -12,6 +12,15 @@ public class User {
     private String photo;
     private String accountNumber;
     private int isUserConfirmed;
+    private int walletBalance = 0;
+
+    public int getWalletBalance() {
+        return walletBalance;
+    }
+
+    public void setWalletBalance(int walletBalance) {
+        this.walletBalance = walletBalance;
+    }
 
     public User(String phone, String password) {
         this.phone = phone;
