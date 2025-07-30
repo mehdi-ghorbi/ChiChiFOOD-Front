@@ -11,7 +11,6 @@
             prefWidth="800" prefHeight="600"
             style="-fx-background-color: #FFFFFF;">
 
-    <!-- نوار بالایی -->
     <top>
         <HBox alignment="TOP_RIGHT">
             <padding>
@@ -32,7 +31,6 @@
         </HBox>
     </top>
 
-    <!-- محتوای اصلی در اسکرول‌پن -->
     <center>
         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
             <VBox spacing="20" style="-fx-background-color: #FFFFFF;">
@@ -40,7 +38,6 @@
                     <Insets top="15" right="15" bottom="15" left="15"/>
                 </padding>
 
-                <!-- باکس جستجوی رستوران -->
                 <VBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-border-color: #FF9800; -fx-border-width: 1;">
                     <padding>
                         <Insets top="15" right="15" bottom="15" left="15"/>
@@ -54,7 +51,6 @@
                     </HBox>
                 </VBox>
 
-                <!-- باکس جستجوی آیتم -->
                 <VBox spacing="10" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-border-color: #FF9800; -fx-border-width: 1;">
                     <padding>
                         <Insets top="15" right="15" bottom="15" left="15"/>
@@ -69,7 +65,6 @@
                     </HBox>
                 </VBox>
 
-                <!-- دکمه‌ها -->
                 <HBox spacing="15" alignment="CENTER">
                     <padding>
                         <Insets top="15" right="15" bottom="15" left="15"/>
@@ -80,7 +75,6 @@
                             style="-fx-background-color: #FFA726; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 20; -fx-font-size: 14;" />
                 </HBox>
 
-                <!-- لیست رستوران‌ها -->
                 <VBox fx:id="vendorsContainer" spacing="15">
                     <padding>
                         <Insets top="15" right="15" bottom="15" left="15"/>

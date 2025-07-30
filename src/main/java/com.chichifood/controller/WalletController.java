@@ -23,7 +23,7 @@ public class WalletController {
     @FXML
     private TextField amountField;
 
-    private int walletBalance = 0;
+    private int walletBalance;
 
     public void setWalletBalance(int walletBalance) {
         this.walletBalance = walletBalance;

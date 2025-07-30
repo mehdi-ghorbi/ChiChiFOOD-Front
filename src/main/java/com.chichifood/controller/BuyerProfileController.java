@@ -41,6 +41,7 @@ public class BuyerProfileController {
     @FXML private Button logoutBtn;
     @FXML private Button editBtn;
     @FXML private Button depositBtn;
+    private int walletBalance;
     public void initialize() {
         seedSampleData();
         backBtn.setOnAction(event -> {
@@ -60,7 +61,21 @@ public class BuyerProfileController {
             editProfile();
         });
         depositBtn.setOnAction(event -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/WalletTopUp.fxml"));
+                Parent root = loader.load();
+                Stage stage = (Stage) depositBtn.getScene().getWindow();
 
+                WalletController controller = loader.getController();
+                controller.setWalletBalance(walletBalance);
+
+                stage.setScene(new Scene(root));
+                stage.setTitle("wallet");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("خطا", "مشکل در بارگذاری صفحه پروفایل");
+            }
         });
         logoutBtn.setOnAction(event -> {
             HttpRequest request = HttpRequest.newBuilder()
@@ -211,6 +226,7 @@ public class BuyerProfileController {
             String bankName = json.has("bankName") ? json.get("bankName").getAsString() : "";
             String accountNumber = json.has("AccountNumber") ? json.get("AccountNumber").getAsString() : "";
             String imagePath = json.has("profileImageBase64") ? json.get("profileImageBase64").getAsString() : "";
+            walletBalance = json.has("walletBalance") ? json.get("walletBalance").getAsInt(): 0;
             user = new User(fullName,phone,email,role,address,bankName,accountNumber,imagePath);
             Platform.runLater(() -> {
                 nameLabel.setText(fullName);

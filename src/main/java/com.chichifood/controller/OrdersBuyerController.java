@@ -487,7 +487,7 @@ public class OrdersBuyerController {
                         addComment.setOnMouseClicked(e -> {
 
                                     try {
-                                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorsMenuView.fxml"));
+                                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/AddComment.fxml"));
                                         Parent root = loader.load();
 
 
