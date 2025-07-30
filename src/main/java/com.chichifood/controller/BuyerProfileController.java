@@ -2,6 +2,7 @@ package com.chichifood.controller;
 
 import com.chichifood.model.User;
 import com.chichifood.network.NetworkService;
+import com.chichifood.network.SessionManager;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.application.Platform;
@@ -21,6 +22,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpRequest;
 
 import static com.chichifood.network.SessionManager.showAlert;
 
@@ -35,6 +38,7 @@ public class BuyerProfileController {
     @FXML private Label bankNameLabel;
     @FXML private Label accountNumberLabel;
     @FXML private Button backBtn;
+    @FXML private Button logoutBtn;
     @FXML private Button editBtn;
     @FXML private Button depositBtn;
     public void initialize() {
@@ -57,6 +61,26 @@ public class BuyerProfileController {
         });
         depositBtn.setOnAction(event -> {
            // inja
+        });
+        logoutBtn.setOnAction(event -> {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8569/logout"))
+                    .header("Authorization", "Bearer " + SessionManager.getToken())
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+            SessionManager.clearToken();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/login.fxml"));
+            Parent root = null;
+            try {
+                root = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Stage stage = (Stage) logoutBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+
         });
     }
     private void editProfile() {
